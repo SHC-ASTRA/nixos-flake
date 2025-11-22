@@ -46,7 +46,7 @@
         };
         clucky = {
           ip = "192.168.1.69";
-          isGraphical = false;
+          isGraphical = true;
         };
         deck = {
           ip = "192.168.1.31";
@@ -96,10 +96,6 @@
             hosts = hostsConfig;
           };
           isGraphical = hostsConfig.clucky.isGraphical;
-
-          nixosModules = [
-            hardware.nixosModules.common-gpu-nvidia
-          ];
         };
 
         testbed = mkHost {
