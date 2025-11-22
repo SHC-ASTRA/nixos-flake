@@ -29,6 +29,7 @@
       nixpkgs,
       home-manager,
       basestation-cameras,
+      hardware,
       ...
     }:
     let
@@ -95,6 +96,10 @@
             hosts = hostsConfig;
           };
           isGraphical = hostsConfig.clucky.isGraphical;
+
+          nixosModules = [
+            hardware.nixosModules.common-gpu-nvidia
+          ];
         };
 
         testbed = mkHost {

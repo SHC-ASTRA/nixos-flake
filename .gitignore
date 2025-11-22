@@ -1,2 +1,6 @@
+# output from building
 result
-hardware-configuration.nix
+
+# output of nixos-generate-config
+/hardware-configuration.nix
+/configuration.nix
