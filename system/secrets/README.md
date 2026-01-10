@@ -19,7 +19,7 @@ it.
 
 You can only decrypt secrets that have been encrypted for you. If your public
 key isn't in `./authorized_keys.nix`, then you will not be able to decrypt the
-key, and must first [add your user](#adding-new-users).
+key, and must first add your user.
 
 To decrypt a secret, use `agenix -d my-secret.age` and it will print it out.
 
@@ -27,7 +27,7 @@ To decrypt a secret, use `agenix -d my-secret.age` and it will print it out.
 
 To allow a new user to decrypt the keys:
 
-1. Add their [public key](#generating-public-keys) to `./authorized_keys.nix`.
+1. Add their public key to `./authorized_keys.nix`.
 2. Rekey the secrets with `agenix -r`.
 
 You must complete these steps from a device that can already decrypt the
