@@ -7,9 +7,13 @@ Sawyer Shepherd's amazing blog post about agenix which can be found
 
 ## Adding new secrets
 
-Let's say you're adding an encrypted secret called my secret. To do that, just
-run `agenix -e my-secret.age` in the same directory as `secrets.nix`. Once you
-save, it will automatically be encrypted in a way that allows all users in `./authorized_keys.nix` and all systems mentioned in `./secrets.nix` to decrypt it.
+Let's say you're adding an encrypted secret called my secret. To do that, modify
+`secrets.nix` in this directory to reference `my-secret.age` (take a look at the
+other secrets in the file to see how to do that) and then run
+`agenix -e my-secret.age` in the same directory as `secrets.nix`. Once you save,
+it will automatically be encrypted in a way that allows all users' keys from
+`./authorized_keys.nix` and all systems mentioned in `./secrets.nix` to decrypt
+it.
 
 ## Decrypting existing secrets
 
@@ -26,6 +30,6 @@ To allow a new user to decrypt the keys:
 1. Add their [public key](#generating-public-keys) to `./authorized_keys.nix`.
 2. Rekey the secrets with `agenix -r`.
 
-You must complete these steps from a device that can already decrupt the
-secrets, or else it will not be able to decrupt them in order to rekey them.
+You must complete these steps from a device that can already decrypt the
+secrets, or else it will not be able to decrypt them in order to rekey them.
 
