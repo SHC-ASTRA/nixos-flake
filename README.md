@@ -2,6 +2,19 @@
 
 [NixOS](https://nixos.org) configuration for ASTRA's computers.
 
+## Contents
+
+- [Home Manager config `./home/`](./home/)
+- [Device-specific config `./hosts/`](./hosts/)
+  - [Tracking Antenna `./hosts/antenna/`](./hosts/antenna/)
+  - [Clucky `./hosts/clucky/`](./hosts/clucky/)
+  - [Steam Deck `./hosts/deck/`](./hosts/deck/)
+  - [Base Station Panda `./hosts/panda/`](./hosts/panda/)
+  - [Testbed `./hosts/testbed/`](./hosts/testbed/)
+- [Global system config `./system/`](./system/)
+  - [Graphical system config `./system/graphical/`](./graphical/graphical/)
+  - [Encrypted secrets `./system/secrets/`](./system/secrets/)
+
 ## Software Prerequisites
 
 You must have [NixOS](https://nixos.org) installed to use this repository.
@@ -109,20 +122,6 @@ sudo nixos-rebuild test
 
 This will rebuild your current hostname's flake and activate the configuration,
 but not persist it across reboots.
-
-
-## Contents
-
-- [Home Manager config `./home/`](./home/)
-- [Device-specific config `./hosts/`](./hosts/)
-  - [Tracking Antenna `./hosts/antenna/`](./hosts/antenna/)
-  - [Clucky `./hosts/clucky/`](./hosts/clucky/)
-  - [Steam Deck `./hosts/deck/`](./hosts/deck/)
-  - [Base Station Panda `./hosts/panda/`](./hosts/panda/)
-  - [Testbed `./hosts/testbed/`](./hosts/testbed/)
-- [Global system config `./system/`](./system/)
-  - [Graphical system config `./system/graphical/`](./graphical/graphical/)
-  - [Encrypted secrets `./system/secrets/`](./system/secrets/)
 
 ## Channels
 
