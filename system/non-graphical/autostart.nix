@@ -3,16 +3,16 @@
   systemd.user.services =
     let
       inShell = f: ''
-        bash -c "cd ~/rover-ros2 ; nix develop --command ${f}"
+        /run/current-system/sw/bin/bash -c "export PATH=$PATH:/run/current-system/sw/bin ; cd ~/rover-ros2 ; nix develop --command ${f}"
       '';
     in
     {
       anchor = {
         enable = true;
         description = "Anchor nodes for controlling the rover and its modules (rover-ros2)";
-        after = [ "systemd-user-sessions.service" ];
-        requires = [ "systemd-user-sessions.service" ];
-        wantedBy = [ "multi-user.target" ];
+        after = [ "default.target" ];
+        requires = [ "default.target" ];
+        wantedBy = [ "default.target" ];
 
         serviceConfig = {
           ExecStart = inShell "~/rover-ros2/auto_start/auto_start_anchor.sh";
@@ -26,9 +26,9 @@
       astra_rosbag = {
         enable = true;
         description = "Record a rosbag on boot to ~/bags/";
-        after = [ "systemd-user-sessions.service" ];
-        requires = [ "systemd-user-sessions.service" ];
-        wantedBy = [ "multi-user.target" ];
+        after = [ "default.target" ];
+        requires = [ "default.target" ];
+        wantedBy = [ "default.target" ];
 
         serviceConfig = {
           ExecStart = inShell "~/rover-ros2/auto_start/start_rosbag.sh";
@@ -42,9 +42,9 @@
       headless_full = {
         enable = true;
         description = "Headless node to control Core and Arm";
-        after = [ "systemd-user-sessions.service" ];
-        requires = [ "systemd-user-sessions.service" ];
-        wantedBy = [ "multi-user.target" ];
+        after = [ "default.target" ];
+        requires = [ "default.target" ];
+        wantedBy = [ "default.target" ];
 
         serviceConfig = {
           ExecStart = inShell "~/rover-ros2/auto_start/auto_start_headless_full.sh";

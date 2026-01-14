@@ -4,7 +4,7 @@
     pkgs.hostapd
   ];
 
-  networking.interfaces."enp86s0" = {
+  networking.interfaces."enp85s0" = {
     ipv4.addresses = [
       {
         address = hosts.testbed.ip;
@@ -14,14 +14,14 @@
   };
 
   services.hostapd = {
-    enable = true;
-    radios."wlp0s20fu6u4".networks."wlp0s20fu6u4" = {
-      ssid = "testbed";
-      apIsolate = false;
-      authentication = {
-        wpaPassword = "opticslabisclosed";
-        mode = "wpa2-sha256";
-      };
-    };
+    #enable = true;
+    #radios."wlp0s20fu6u4".networks."wlp0s20fu6u4" = {
+    #  ssid = "testbed";
+    #  apIsolate = false;
+    #  authentication = {
+    #    wpaPassword = "opticslabisclosed";
+    #    mode = "wpa2-sha256";
+    #  };
+    #};
   };
 }
