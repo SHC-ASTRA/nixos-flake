@@ -42,13 +42,13 @@
     isNormalUser = true;
     description = "ASTRA";
     extraGroups = [
-      "wheel"
-      "networkmanager"
-      "hostapd"
-      "docker"
-      "dialout"
-      "input"
-      "usb"
+      "wheel" # allows the use of sudo
+      "networkmanager" # allows network management
+      "hostapd" # allows hotspot configuration
+      "docker" # allows docker
+      "dialout" # allows serial
+      "input" # allows access to Human Interface Devices (HID) like controllers
+      "usb" # allows access to other USB devices
     ];
   };
 

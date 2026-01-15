@@ -12,7 +12,10 @@
       url = "github:nix-community/home-manager/release-25.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
-    basestation-cameras.url = "github:SHC-ASTRA/basestation-cameras";
+    basestation-cameras = {
+      url = "github:SHC-ASTRA/basestation-cameras/launch-script";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
@@ -61,6 +64,10 @@
           ip = "192.168.1.70";
           isGraphical = false;
 	  isNvidia = true;
+        };
+        nixos = {
+          ip = "";
+          isGraphical = true;
         };
       };
 
@@ -151,6 +158,23 @@
             hosts = hostsConfig;
           };
           isGraphical = hostsConfig.panda.isGraphical;
+        };
+
+        nixos = mkHost {
+          name = "nixos";
+          inherit username;
+
+          extraSpecialArgs = {
+            inherit self inputs;
+            host = hostsConfig.nixos;
+            hosts = hostsConfig;
+          };
+          homeSpecialArgs = {
+            inherit self inputs;
+            host = hostsConfig.nixos;
+            hosts = hostsConfig;
+          };
+          isGraphical = hostsConfig.nixos.isGraphical;
         };
       };
     in

@@ -6,6 +6,7 @@
     socat
     usbutils
     silver-searcher
+    wl-clipboard
 
     # Programming
     nil

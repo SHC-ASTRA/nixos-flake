@@ -8,6 +8,5 @@
     ./neovim.nix
     ./firefox.nix
     ./starship.nix
-    ./basestation-cameras.nix
   ];
 }
