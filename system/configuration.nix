@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ pkgs, config, ... }:
 {
   # Bootloader.
   boot = {
@@ -61,11 +61,9 @@
   virtualisation.docker.enable = true;
 
   services = {
-    udev = {
-      packages = [
-        pkgs.steam-devices-udev-rules
-      ];
-    };
+    udev.packages = with pkgs; [
+      steam-devices-udev-rules
+    ];
     ros2 = {
       enable = true;
       distro = "humble";
@@ -97,6 +95,14 @@
       enable = true;
       powerOnBoot = true;
     };
+  };
+
+  systemd.services."getty@tty1" = {
+    overrideStrategy = "asDropin";
+    serviceConfig.ExecStart = [
+      ""
+      "@${pkgs.util-linux}/sbin/agetty agetty --login-program ${config.services.getty.loginProgram} --autologin astra --noclear --keep-baud %I 115200,38400,9600 $TERM"
+    ];
   };
 
   system.stateVersion = "25.05";

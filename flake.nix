@@ -46,7 +46,7 @@
         };
         clucky = {
           ip = "192.168.1.69";
-          isGraphical = true;
+          isGraphical = false;
 	  isNvidia = true;
         };
         deck = {

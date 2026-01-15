@@ -6,7 +6,7 @@
     ./network.nix
     ./age.nix
   ]
-  ++ (if host.isGraphical then [ ./graphical ] else [ ./non-graphical ])
+  ++ (if host.isGraphical then [ ./graphical ./non-graphical ] else [ ./non-graphical ])
   ++ (if host.isNvidia then [ ./nvidia ] else []);
 
   boot.extraModulePackages = [

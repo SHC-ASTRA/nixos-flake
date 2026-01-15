@@ -3,7 +3,7 @@
   systemd.user.services =
     let
       inShell = f: ''
-        /run/current-system/sw/bin/bash -c "export PATH=$PATH:/run/current-system/sw/bin ; cd ~/rover-ros2 ; nix develop --command ${f}"
+        /bin/sh -c ". /etc/profile ; cd ~/rover-ros2 ; nix develop --command ${f}"
       '';
     in
     {
@@ -49,7 +49,7 @@
         serviceConfig = {
           ExecStart = inShell "~/rover-ros2/auto_start/auto_start_headless_full.sh";
           Restart = "always";
-          RestartSec = 10;
+          RestartSec = 5;
           Environment = ''
             PYTHONUNBUFFERED=1
           '';
