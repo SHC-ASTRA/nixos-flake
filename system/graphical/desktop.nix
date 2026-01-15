@@ -22,6 +22,5 @@
       games.enable = false;
       gnome-keyring.enable = true;
     };
-
   };
 }

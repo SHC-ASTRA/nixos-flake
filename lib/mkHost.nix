@@ -14,6 +14,7 @@
   homeSpecialArgs ? { }, # Additional specialArgs to pass to home-manager
   # System type for specialized configuration
   isGraphical ? false, # Whether this is a desktop system (with GUI) or server
+  isNvidia ? false, # Whether this is a system with an Nvidia GPU
 }:
 let
   # Access to nixpkgs lib
@@ -64,7 +65,7 @@ let
   # Machine-specific special arguments
   allSpecialArgs = {
     inherit inputs system;
-    host = { inherit name isGraphical; };
+    host = { inherit name isGraphical isNvidia; };
   }
   // extraSpecialArgs;
 in

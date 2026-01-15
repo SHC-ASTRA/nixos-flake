@@ -4,10 +4,10 @@
     pkgs.hostapd
   ];
 
-  networking.interfaces."enp85s0" = {
+  networking.interfaces."enp86s0" = {
     ipv4.addresses = [
       {
-        address = hosts.testbed.ip;
+        address = hosts.clucky.ip;
         prefixLength = 24;
       }
     ];

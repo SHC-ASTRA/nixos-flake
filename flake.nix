@@ -32,6 +32,7 @@
       nixpkgs,
       home-manager,
       basestation-cameras,
+      hardware,
       ...
     }:
     let
@@ -49,6 +50,7 @@
         clucky = {
           ip = "192.168.1.69";
           isGraphical = false;
+	  isNvidia = true;
         };
         deck = {
           ip = "192.168.1.31";
@@ -61,6 +63,7 @@
         testbed = {
           ip = "192.168.1.70";
           isGraphical = false;
+	  isNvidia = true;
         };
         nixos = {
           ip = "";
@@ -102,6 +105,7 @@
             hosts = hostsConfig;
           };
           isGraphical = hostsConfig.clucky.isGraphical;
+	  isNvidia = hostsConfig.clucky.isNvidia;
         };
 
         testbed = mkHost {
@@ -119,6 +123,7 @@
             hosts = hostsConfig;
           };
           isGraphical = hostsConfig.testbed.isGraphical;
+	  isNvidia = hostsConfig.testbed.isNvidia;
         };
 
         deck = mkHost {
