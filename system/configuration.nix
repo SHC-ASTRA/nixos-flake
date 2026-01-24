@@ -38,6 +38,8 @@
     ];
   };
 
+  users.mutableUsers = false;
+
   users.users.astra = {
     isNormalUser = true;
     description = "ASTRA";
