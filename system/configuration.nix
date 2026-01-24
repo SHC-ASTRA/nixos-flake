@@ -50,6 +50,9 @@
       "input" # allows access to Human Interface Devices (HID) like controllers
       "usb" # allows access to other USB devices
     ];
+
+    # this is technically bad practice to publish, but everyone already knows this password anyways
+    hashedPassword = "$y$j9T$esraCMpX2wws6dAC7ypZO.$mz7g5Fgu42MGy/AS56x9IcytnK1LgG4YSUIZGcvbRm9";
   };
 
   nixpkgs.config.allowUnfree = true;
