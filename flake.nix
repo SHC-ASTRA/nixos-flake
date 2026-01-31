@@ -59,6 +59,7 @@
         panda = {
           ip = "192.168.1.32";
           isGraphical = true;
+          isNvidia = false;
         };
         testbed = {
           ip = "192.168.1.70";
