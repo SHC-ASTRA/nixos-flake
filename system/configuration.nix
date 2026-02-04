@@ -1,4 +1,9 @@
-{ pkgs, config, ... }:
+{
+  pkgs,
+  config,
+  host,
+  ...
+}:
 {
   # Bootloader.
   boot = {
@@ -74,14 +79,18 @@
       distro = "humble";
 
       systemPackages =
-        p: with p; [
-          ament-cmake-core
-          python-cmake-module
-          ros-core
-          ros2cli
-          ros2run
-	  rqt-graph
-        ];
+        p:
+        (
+          with p;
+          [
+            ament-cmake-core
+            python-cmake-module
+            ros-core
+            ros2cli
+            ros2run
+          ]
+          ++ (if host.isGraphical then [ rqt-graph ] else [ ])
+        );
     };
 
     pulseaudio.enable = false;
