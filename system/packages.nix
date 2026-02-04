@@ -9,6 +9,7 @@
     wl-clipboard
 
     # Programming
+    micro
     nil
     nixd
     neovim
