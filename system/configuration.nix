@@ -75,11 +75,12 @@
 
       systemPackages =
         p: with p; [
+          ament-cmake-core
+          python-cmake-module
           ros-core
           ros2cli
           ros2run
-          ament-cmake-core
-          python-cmake-module
+	  rqt-graph
         ];
     };
 
