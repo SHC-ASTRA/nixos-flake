@@ -64,10 +64,7 @@
 
   nixpkgs.config.allowUnfree = true;
 
-  programs = {
-    dconf.enable = true;
-    ssh.forwardX11 = true;
-  };
+  programs.dconf.enable = true;
 
   virtualisation.docker.enable = true;
 

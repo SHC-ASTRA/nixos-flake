@@ -10,6 +10,8 @@
       UseDns = true;
       PasswordAuthentication = true;
       PermitRootLogin = "no";
+      X11Forwarding = true;
+      X11UseLocalhost = true;
     };
   };
 }
