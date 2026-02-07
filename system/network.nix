@@ -1,7 +1,7 @@
 { pkgs, ... }:
 {
   environment.systemPackages = with pkgs.xorg; [
-    xauth
+    xauth # required for x forwarding to configure security
   ];
   networking = {
     networkmanager.enable = true;
