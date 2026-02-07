@@ -66,6 +66,7 @@
 
   programs = {
     dconf.enable = true;
+    ssh.forwardX11 = true;
   };
 
   virtualisation.docker.enable = true;
