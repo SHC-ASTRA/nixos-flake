@@ -1,5 +1,8 @@
-{ ... }:
+{ pkgs, ... }:
 {
+  environment.systemPackages = with pkgs.xorg; [
+    xauth
+  ];
   networking = {
     networkmanager.enable = true;
     firewall.enable = false;
