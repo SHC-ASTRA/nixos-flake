@@ -1,0 +1,60 @@
+{
+  # clucky aspect
+  den.aspects.clucky = {
+    # clucky NixOS configuration
+    nixos =
+      { pkgs, lib, config, ... }:
+      {
+        environment.systemPackages = [
+          pkgs.hostapd
+        ];
+
+        networking.interfaces."enp86s0" = {
+          ipv4.addresses = [
+            {
+              address = 192.168.1.69;
+              prefixLength = 24;
+            }
+          ];
+        };
+
+        boot.initrd.availableKernelModules = [ "xhci_pci" "thunderbolt" "ahci" "nvme" "usbhid" ];
+        boot.initrd.kernelModules = [ ];
+        boot.kernelModules = [ "kvm-intel" ];
+        boot.extraModulePackages = [ ];
+
+        fileSystems."/" =
+          { device = "/dev/disk/by-uuid/fbdd4788-1171-4a2f-a926-b699bd63cd70";
+            fsType = "ext4";
+          };
+
+        fileSystems."/boot" =
+          { device = "/dev/disk/by-uuid/5048-0244";
+            fsType = "vfat";
+            options = [ "fmask=0077" "dmask=0077" ];
+          };
+
+        swapDevices =
+          [ { device = "/dev/disk/by-uuid/93950c04-89d5-4b0d-a37e-259b2590a9bc"; }
+          ];
+
+        # Enables DHCP on each ethernet and wireless interface. In case of scripted networking
+        # (the default) this is the recommended approach. When using systemd-networkd it's
+        # still possible to use this option, but it's recommended to use it in conjunction
+        # with explicit per-interface declarations with `networking.interfaces.<interface>.useDHCP`.
+        networking.useDHCP = lib.mkDefault true;
+        # networking.interfaces.enp86s0.useDHCP = lib.mkDefault true;
+        # networking.interfaces.wlo1.useDHCP = lib.mkDefault true;
+
+        nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
+        hardware.cpu.intel.updateMicrocode = lib.mkDefault config.hardware.enableRedistributableFirmware;
+      };
+
+    # clucky provides default home environment for its users
+    homeManager =
+      { ... }:
+      {
+
+      };
+  };
+}
