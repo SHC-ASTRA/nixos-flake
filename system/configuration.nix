@@ -120,5 +120,20 @@
     ];
   };
 
+  nix.buildMachines = [{
+    hostName = "remotebuild.ryleu.me:2222";
+    system = "x86_64-linux";
+    protocol = "ssh-ng";
+    maxJobs = 0;
+    speedFactor = 2;
+    supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    mandatoryFeatures = [ ];
+  }];
+
+  nix.distributedBuilds = true;
+  nix.settings = {
+    builders-use-substitutes = true;
+  };
+
   system.stateVersion = "25.05";
 }
