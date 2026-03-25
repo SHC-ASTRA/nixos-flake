@@ -121,10 +121,10 @@
   };
 
   nix.buildMachines = [{
-    hostName = "remotebuild.ryleu.me:2222";
+    hostName = "remote-builder";
     system = "x86_64-linux";
     protocol = "ssh-ng";
-    maxJobs = 0;
+    maxJobs = 1;
     speedFactor = 2;
     supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     mandatoryFeatures = [ ];
@@ -134,6 +134,14 @@
   nix.settings = {
     builders-use-substitutes = true;
   };
+
+    programs.ssh.extraConfig = ''
+      Host remote-builder
+        User nixremote
+        HostName remotebuild.ryleu.me
+        Port 2222
+        IdentityFile /home/user/.ssh/builder-rsa # As before, Agenix will work here
+    '';
 
   system.stateVersion = "25.05";
 }
