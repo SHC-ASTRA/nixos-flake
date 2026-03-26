@@ -124,7 +124,7 @@
     hostName = "remote-builder";
     system = "x86_64-linux";
     protocol = "ssh-ng";
-    maxJobs = 1;
+    maxJobs = 3;
     speedFactor = 2;
     supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
     mandatoryFeatures = [ ];
