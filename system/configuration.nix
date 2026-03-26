@@ -140,7 +140,6 @@
         User nixremote
         HostName remotebuild.ryleu.me
         Port 2222
-        IdentityFile /home/user/.ssh/builder-rsa # As before, Agenix will work here
     '';
 
   system.stateVersion = "25.05";
