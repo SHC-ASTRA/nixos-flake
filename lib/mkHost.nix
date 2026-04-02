@@ -26,9 +26,12 @@ let
     inputs.nix-ros-overlay.nixosModules.default
     inputs.agenix.nixosModules.default
     inputs.vscode-server.nixosModules.default
-    ({ config, pkgs, ... }: {
-      services.vscode-server.enable = true;
-    })
+    (
+      { ... }:
+      {
+        services.vscode-server.enable = true;
+      }
+    )
     ../system
     {
       networking.hostName = name;
