@@ -23,6 +23,7 @@
         darwin.follows = "";
       };
     };
+    vscode-server.url = "github:nix-community/nixos-vscode-server";
   };
 
   outputs =
@@ -33,6 +34,7 @@
       home-manager,
       basestation-cameras,
       hardware,
+      vscode-server,
       ...
     }:
     let
