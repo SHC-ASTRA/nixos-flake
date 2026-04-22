@@ -3,10 +3,7 @@
 
   inputs = {
     nix-ros-overlay.url = "github:lopsided98/nix-ros-overlay/master";
-    nixpkgs = {
-      url = "github:nixos/nixpkgs/nixos-25.05";
-      follows = "nix-ros-overlay/nixpkgs";
-    };
+    nixpkgs.follows = "nix-ros-overlay/nixpkgs";
     hardware.url = "github:nixos/nixos-hardware";
     home-manager = {
       url = "github:nix-community/home-manager/release-25.05";
