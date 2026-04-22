@@ -56,7 +56,7 @@
         };
       };
       realsense2_camera = {
-        enable true;
+        enable = true;
         description = "ROS2 wrapper for the Realsense D455 camera"
         after = [ "default.target" ];
         requires = [ "default.target" ];
