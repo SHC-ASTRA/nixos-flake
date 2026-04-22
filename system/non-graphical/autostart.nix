@@ -55,5 +55,21 @@
           '';
         };
       };
+      realsense2_camera = {
+        enable true;
+        description = "ROS2 wrapper for the Realsense D455 camera"
+        after = [ "default.target" ];
+        requires = [ "default.target" ];
+        wantedBy = [ "default.target" ];
+
+        serviceConfig = {
+          ExecStart = "ros2 launch realsense2_camera rs_launch.py enable_rgbd:=true enable_sync:=true align_depth.enable:=true enable_color:=true enable_depth:=true";
+          Restart = "always";
+          RestartSec = 5;
+          Environment = ''
+            PYTHONUNBUFFERED=1
+          '';
+        };
+      };
     };
 }

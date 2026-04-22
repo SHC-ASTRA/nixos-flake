@@ -88,6 +88,7 @@
             ros-core
             ros2cli
             ros2run
+            realsense2-camera
           ]
           ++ (if host.isGraphical then [ rqt-graph ] else [ ])
         );
