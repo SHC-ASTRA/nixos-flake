@@ -10,9 +10,9 @@
     '';
     matchBlocks = {
       "*" = {
-    addKeysToAgent = "yes";
-    forwardAgent = true;
-    compression = true;
+        addKeysToAgent = "yes";
+        forwardAgent = true;
+        compression = true;
       };
       "git@github.com" = {
         hostname = "github.com";
