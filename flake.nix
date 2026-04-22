@@ -13,7 +13,7 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
     basestation-cameras = {
-      url = "github:SHC-ASTRA/basestation-cameras/launch-script";
+      url = "github:SHC-ASTRA/basestation-cameras";
       inputs.nixpkgs.follows = "nixpkgs";
     };
     agenix = {
