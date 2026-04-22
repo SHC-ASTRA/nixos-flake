@@ -6,6 +6,14 @@
     ./network.nix
     ./age.nix
   ]
-  ++ (if host.isGraphical then [ ./graphical ./non-graphical ] else [ ./non-graphical ])
-  ++ (if host.isNvidia then [ ./nvidia ] else []);
+  ++ (
+    if host.isGraphical then
+      [
+        ./graphical
+        ./non-graphical
+      ]
+    else
+      [ ./non-graphical ]
+  )
+  ++ (if host.isNvidia then [ ./nvidia ] else [ ]);
 }

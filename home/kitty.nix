@@ -1,4 +1,5 @@
-{ pkgs, host, ... }: {
+{ pkgs, host, ... }:
+{
   programs.kitty = {
     enable = host.isGraphical;
     font = {
