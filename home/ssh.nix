@@ -2,14 +2,18 @@
 {
   programs.ssh = {
     enable = true;
-    addKeysToAgent = "yes";
-    forwardAgent = true;
-    compression = true;
+
+    enableDefaultConfig = false;
     extraConfig = ''
       PreferredAuthentications publickey,password
       IdentityFile /home/astra/.ssh/id_ed25519
     '';
     matchBlocks = {
+      "*" = {
+        addKeysToAgent = "yes";
+        forwardAgent = true;
+        compression = true;
+      };
       "git@github.com" = {
         hostname = "github.com";
         user = "git";
