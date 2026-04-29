@@ -120,5 +120,27 @@
     ];
   };
 
+  nix.buildMachines = [{
+    hostName = "remote-builder";
+    system = "x86_64-linux";
+    protocol = "ssh-ng";
+    maxJobs = 3;
+    speedFactor = 2;
+    supportedFeatures = [ "nixos-test" "benchmark" "big-parallel" "kvm" ];
+    mandatoryFeatures = [ ];
+  }];
+
+  nix.distributedBuilds = true;
+  nix.settings = {
+    builders-use-substitutes = true;
+  };
+
+    programs.ssh.extraConfig = ''
+      Host remote-builder
+        User nixremote
+        HostName remotebuild.ryleu.me
+        Port 2222
+    '';
+
   system.stateVersion = "25.05";
 }
