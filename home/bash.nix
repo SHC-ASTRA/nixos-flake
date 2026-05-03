@@ -17,14 +17,6 @@
 
     bat.enable = true;
 
-    thefuck.enable = true;
-
-    git = {
-      enable = true;
-      delta.enable = true;
-      extraConfig.init.defaultBranch = "main";
-    };
-
     eza = {
       enable = true;
       colors = "auto";

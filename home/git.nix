@@ -1,10 +1,16 @@
 { ... }:
 {
   programs = {
+
+    delta = {
+      enable = true;
+      enableGitIntegration = true;
+    };
+
     git = {
       enable = true;
-      delta.enable = true;
-      extraConfig = {
+
+      settings = {
         commit.gpgsign = true;
         gpg.format = "ssh";
         user = {
