@@ -4,11 +4,10 @@
   inputs = {
     nix-ros-overlay.url = "github:lopsided98/nix-ros-overlay/master";
     nixpkgs.follows = "nix-ros-overlay/nixpkgs";
+
     hardware.url = "github:nixos/nixos-hardware";
-    home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
-      inputs.nixpkgs.follows = "nixpkgs";
-    };
+    home-manager.url = "github:nix-community/home-manager/release-25.11";
+
     basestation-cameras = {
       url = "github:SHC-ASTRA/basestation-cameras";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -49,15 +48,17 @@
         antenna = {
           ip = "192.168.1.33";
           isGraphical = false;
+          isNvidia = false;
         };
         clucky = {
           ip = "192.168.1.69";
           isGraphical = false;
-          isNvidia = true;
+	        isNvidia = true;
         };
         deck = {
           ip = "192.168.1.31";
           isGraphical = true;
+          isNvidia = false;
         };
         panda = {
           ip = "192.168.1.32";
@@ -67,11 +68,12 @@
         testbed = {
           ip = "192.168.1.70";
           isGraphical = false;
-          isNvidia = true;
+	        isNvidia = true;
         };
         nixos = {
           ip = "";
           isGraphical = true;
+          isNvidia = false;
         };
       };
 

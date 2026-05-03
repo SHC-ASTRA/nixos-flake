@@ -17,8 +17,6 @@
 
     bat.enable = true;
 
-    pay-respects.enable = true;
-
     eza = {
       enable = true;
       colors = "auto";
