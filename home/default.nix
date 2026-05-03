@@ -8,5 +8,7 @@
     ./neovim.nix
     ./firefox.nix
     ./starship.nix
+    ./tmux.nix
+    ./zsh-experience.nix
   ];
 }

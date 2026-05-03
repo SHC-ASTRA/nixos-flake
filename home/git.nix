@@ -21,5 +21,10 @@
         init.defaultBranch = "main";
       };
     };
+
+    delta = {
+      enable = true;
+      enableGitIntegration = false;
+    };
   };
 }

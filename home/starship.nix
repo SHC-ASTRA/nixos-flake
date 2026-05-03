@@ -6,6 +6,6 @@
   };
 
   programs.starship.settings = {
-    
+
   };
 }

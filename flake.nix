@@ -20,6 +20,10 @@
       };
     };
     vscode-server.url = "github:nix-community/nixos-vscode-server";
+    treefmt-nix = {
+      url = "github:numtide/treefmt-nix";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
   };
 
   outputs =
@@ -107,7 +111,7 @@
             hosts = hostsConfig;
           };
           isGraphical = hostsConfig.clucky.isGraphical;
-	  isNvidia = hostsConfig.clucky.isNvidia;
+          isNvidia = hostsConfig.clucky.isNvidia;
         };
 
         testbed = mkHost {
@@ -125,7 +129,7 @@
             hosts = hostsConfig;
           };
           isGraphical = hostsConfig.testbed.isGraphical;
-	  isNvidia = hostsConfig.testbed.isNvidia;
+          isNvidia = hostsConfig.testbed.isNvidia;
         };
 
         deck = mkHost {
@@ -182,11 +186,21 @@
     in
     {
       nixosConfigurations = builtins.mapAttrs (name: host: host.nixosConfig) hosts;
+
+      formatter.${system} =
+        (inputs.treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix)
+        .config.build.wrapper;
     };
 
   nixConfig = {
     # Cache to pull ros packages from
-    extra-substituters = [ "https://ros.cachix.org" ];
-    extra-trusted-public-keys = [ "ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo=" ];
+    extra-substituters = [
+      "https://ros.cachix.org"
+      "https://attic.iid.ciirc.cvut.cz/ros"
+    ];
+    extra-trusted-public-keys = [
+      "ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo="
+      "ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q="
+    ];
   };
 }
