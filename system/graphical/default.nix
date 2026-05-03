@@ -4,5 +4,6 @@
   imports = [
     ./desktop.nix
     ./packages.nix
+    ./autostart.nix
   ];
 }
