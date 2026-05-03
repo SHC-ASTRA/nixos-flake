@@ -26,8 +26,6 @@
     ]
     ++ (with inputs.basestation-cameras.packages.${pkgs.system}; [
       default
-      cameracli
       launch-cameras
-      pkgs.parallel # i don't know how to fix this
     ]);
 }
