@@ -49,6 +49,7 @@
         antenna = {
           ip = "192.168.1.33";
           isGraphical = false;
+          isNvidia = false;
         };
         clucky = {
           ip = "192.168.1.69";
