@@ -32,7 +32,7 @@ in
     };
   };
 
-  networking.firewall.allowedTCPPorts = [
+  networking.firewall.allowedUDPPorts = [
     14550
   ];
 }
