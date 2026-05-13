@@ -5,14 +5,15 @@ let
   mavproxy-device-check = pkgs.writeShellScript "mavproxy-device-check" ''
     set -eu
     while [[ ! -e ${device} ]]; do
-      sleep 10
+      sleep 3
     done
   '';
 
   start-mavproxy = pkgs.writeShellScript "start-mavproxy" ''
     set -eu
+    cd /home/astra
     export PYTHONPATH="${pkgs.python312Packages.future}/${pkgs.python312.sitePackages}:''${PYTHONPATH:-}"
-    exec ${pkgs.mavproxy}/bin/mavproxy.py --master=${device}
+    exec ${pkgs.mavproxy}/bin/mavproxy.py --non-interactive --master=${device}
   '';
 in
 {
