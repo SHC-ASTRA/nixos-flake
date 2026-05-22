@@ -7,17 +7,17 @@
     };
   };
   services = {
+    displayManager.gdm = {
+      enable = true;
+      wayland = true;
+    };
+    desktopManager.gnome.enable = true;
     xserver = {
       enable = true;
-      displayManager.gdm = {
-        enable = true;
-        wayland = true;
-      };
-      desktopManager.gnome.enable = true;
     };
 
     gnome = {
-      core-utilities.enable = true;
+      core-apps.enable = true;
       core-developer-tools.enable = false;
       games.enable = false;
       gnome-keyring.enable = true;
