@@ -59,6 +59,7 @@
         deck = {
           ip = "192.168.1.31";
           isGraphical = true;
+	  isNvidia = false;
         };
         panda = {
           ip = "192.168.1.32";
@@ -73,7 +74,8 @@
         nixos = {
           ip = "";
           isGraphical = true;
-        };
+          isNvidia = false;
+	};
       };
 
       # Generates hosts for each system based on hostsConfig
