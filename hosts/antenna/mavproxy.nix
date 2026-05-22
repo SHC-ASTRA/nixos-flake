@@ -19,6 +19,10 @@ let
     export PYTHONPATH="${pkgs.python312Packages.future}/${pkgs.python312.sitePackages}:''${PYTHONPATH:-}"
     exec ${pkgs.mavproxy}/bin/mavproxy.py --non-interactive --master=${device} --out ${addr}:${port}
   '';
+
+  inShell = f: ''
+    /bin/sh -c ". /etc/profile ; cd ~/antenna-ros2 ; nix develop ---command ${f}";
+  '';
 in
 {
   systemd.user.services.mavproxy = {
@@ -29,6 +33,19 @@ in
       ExecStart = "${start-mavproxy}";
       Restart = "always";
       RestartSec = 10;
+    };
+  };
+
+  systemd.user.services.autostart = {
+    enable = true;
+    wantedBy = [ "default.target" ];
+    serviceConfig = {
+      ExecStart = inShell "~/antenna-ros2/auto_start/start_node.sh";
+      Restart = "always";
+      RestartSec = 5;
+      Environment = ''
+        PYTHONBUFFERED=1
+      '';
     };
   };
 
