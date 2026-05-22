@@ -40,7 +40,7 @@ in
     enable = true;
     wantedBy = [ "default.target" ];
     serviceConfig = {
-      ExecStart = inShell "~/antenna-ros2/auto_start/start_node.sh";
+      ExecStart = inShell "~/antenna-ros2/auto_start/start_antenna_node.sh";
       Restart = "always";
       RestartSec = 5;
       Environment = ''
