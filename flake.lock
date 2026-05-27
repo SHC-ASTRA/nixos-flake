@@ -31,11 +31,11 @@
         ]
       },
       "locked": {
-        "lastModified": 1777845357,
-        "narHash": "sha256-lXmTr0mOAB+ifQWT6x70Nq6DKmIIau6GjHonkiUd2lA=",
+        "lastModified": 1779906607,
+        "narHash": "sha256-IHzbAjP264bpb/0w0Buu1DeaZ8LS3IgAoTD7G+9s+To=",
         "owner": "SHC-ASTRA",
         "repo": "basestation-cameras",
-        "rev": "926bc78e60f232cc1046efd5efd3fc4c6a77367b",
+        "rev": "b0772475e206421666c221c38cfd6e6338df740c",
         "type": "github"
       },
       "original": {
