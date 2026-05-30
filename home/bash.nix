@@ -11,6 +11,7 @@
         neofetch = "fastfetch";
       };
       profileExtra = ''
+        eval `ssh-agent`
         [[ -e ~/.ssh/id_ed25519 ]] && ssh-add ~/.ssh/id_ed25519 &> /dev/null
       '';
     };
