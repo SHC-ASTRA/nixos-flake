@@ -1,4 +1,18 @@
-{ osConfig, ... }:
+{ osConfig, lib, ... }:
+let
+  mkHostBlocks = name: cfg: {
+    "${name}" = {
+      hostname = cfg.ip;
+      user = "astra";
+    };
+    "${name}.local" = {
+      hostname = "${name}.local";
+      user = "astra";
+    };
+  };
+
+  hostBlocks = lib.concatMapAttrs mkHostBlocks osConfig.astra.hosts;
+in
 {
   programs.ssh = {
     enable = true;
@@ -18,26 +32,7 @@
         hostname = "github.com";
         user = "git";
       };
-      "clucky" = {
-        hostname = osConfig.astra.hosts.clucky.ip;
-        user = "astra";
-      };
-      "testbed" = {
-        hostname = osConfig.astra.hosts.testbed.ip;
-        user = "astra";
-      };
-      "deck" = {
-        hostname = osConfig.astra.hosts.deck.ip;
-        user = "astra";
-      };
-      "panda" = {
-        hostname = osConfig.astra.hosts.panda.ip;
-        user = "astra";
-      };
-      "antenna" = {
-        hostname = osConfig.astra.hosts.antenna.ip;
-        user = "astra";
-      };
-    };
+    }
+    // hostBlocks;
   };
 }
