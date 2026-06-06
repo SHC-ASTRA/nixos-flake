@@ -5,6 +5,10 @@
     nix-ros-overlay.url = "github:lopsided98/nix-ros-overlay/master";
     nixpkgs.follows = "nix-ros-overlay/nixpkgs";
     hardware.url = "github:nixos/nixos-hardware";
+    disko = {
+      url = "github:nix-community/disko";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
@@ -40,6 +44,7 @@
         inputs.nix-ros-overlay.nixosModules.default
         inputs.agenix.nixosModules.default
         inputs.vscode-server.nixosModules.default
+        inputs.disko.nixosModules.disko
         { services.vscode-server.enable = true; }
         ./modules/nixos
         ./modules/home-manager
@@ -52,6 +57,14 @@
           specialArgs = { inherit inputs; };
           modules = baseModules ++ [ hardwareModule ];
         };
+
+      mkInstaller =
+        module:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs; };
+          modules = [ module ];
+        };
     in
     {
       nixosConfigurations = {
@@ -60,7 +73,18 @@
         deck = mkSystem ./modules/hardware/deck;
         panda = mkSystem ./modules/hardware/panda;
         testbed = mkSystem ./modules/hardware/testbed;
-        nixos = mkSystem ./modules/hardware/nixos;
+        installer = mkInstaller ./modules/installer;
+      };
+
+      packages.${system}.installer = self.nixosConfigurations.installer.config.system.build.isoImage;
+
+      diskoConfigurations.standard = import ./modules/disko;
+
+      devShells.${system}.default = nixpkgs.legacyPackages.${system}.mkShellNoCC {
+        packages = with nixpkgs.legacyPackages.${system}; [
+          act
+          gh
+        ];
       };
 
       formatter.${system} =

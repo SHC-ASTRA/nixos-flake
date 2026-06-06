@@ -1,6 +1,8 @@
 {
   imports = [
-    ./hardware-configuration.nix
+    ../common
+    ../common/cpu-intel.nix
+    ../../disko
     ./network.nix
   ];
 

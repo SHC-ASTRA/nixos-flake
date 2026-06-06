@@ -1,0 +1,59 @@
+name: Build installer ISO
+
+on:
+  push:
+    branches: [main]
+    tags: ["v*"]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build astra-installer.iso
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force || true
+          df -h
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            accept-flake-config = true
+            extra-substituters = https://ros.cachix.org https://attic.iid.ciirc.cvut.cz/ros
+            extra-trusted-public-keys = ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo= ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q=
+
+      - name: Check flake
+        run: nix flake check --print-build-logs
+
+      - name: Build installer
+        run: nix build .#installer --print-build-logs
+
+      - name: Resolve ISO path
+        id: iso
+        run: |
+          iso=$(readlink -f result/iso/*.iso)
+          echo "path=$iso" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$iso")" >> "$GITHUB_OUTPUT"
+          ls -lh "$iso"
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.iso.outputs.name }}
+          path: ${{ steps.iso.outputs.path }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attach ISO to release
+        if: ${{ !env.ACT && startsWith(github.ref, 'refs/tags/v') }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.iso.outputs.path }}
+          fail_on_unmatched_files: true

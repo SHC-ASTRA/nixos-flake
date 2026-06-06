@@ -1,7 +1,9 @@
 { inputs, ... }:
 {
   imports = [
-    ./hardware-configuration.nix
+    ../common
+    ../common/cpu-intel.nix
+    ../../disko
     inputs.hardware.nixosModules.common-gpu-nvidia-nonprime
   ];
 

@@ -15,10 +15,6 @@
   - [Graphical system config `./system/graphical/`](./graphical/graphical/)
   - [Encrypted secrets `./system/secrets/`](./system/secrets/)
 
-## Software Prerequisites
-
-You must have [NixOS](https://nixos.org) installed to use this repository.
-
 ## Usage
 
 > [!IMPORTANT]
@@ -52,54 +48,33 @@ sudo nixos-rebuild boot
 ### Apply Flake on New Installation
 
 > [!CAUTION]
-> These instructions will overwrite your current system configuration with
-> the ASTRA one. Only use on a system where you're sure this is okay!
+> The installer erases the selected disk. Only run it on a system where this
+> is okay.
 
-First, connect to wifi and prepare the system for setup.
-
-```bash
-# take ownership of the installation path
-sudo chown -R $USER /etc/nixos
-
-# remove existing system config
-rm -rf /etc/nixos/*
-
-# clone flake to correct path
-# we need to use nix-shell here because new systems do not have git installed.
-nix-shell -p git --run 'git clone https://github.com/SHC-ASTRA/flake.git /etc/nixos'
-```
-
-Second, modify the flake to match your installation. Depending on which system
-you're installing on, you'll need to select the correct hostname. Replace
-`${hostname}` with the one you select. Here's the list:
-
-- Tracking Antenna: `antenna`
-- Clucky: `clucky`
-- Steam Deck: `deck`
-- Base Station Panda: `panda`
-- Testbed: `testbed`
+Build the installer ISO:
 
 ```bash
-# generate the hardware configuration and copy it to the right host
-nixos-generate-config
-mv /etc/nixos/hardware-configuration.nix /etc/nixos/hosts/${hostname}/hardware.nix
+nix build .#installer
 ```
 
-Third, actually install the flake.
+The image will end up at `./result/iso/astra-installer-*.iso`. Write it to a USB flash
+drive that is >=2GB using your favorite flashing software. I recommend
+[balenaEtcher](https://etcher.balena.io/) or the `dd` command.
+
+Once booted, run the installer and follow the prompts:
 
 ```bash
-# rebuild the system, selecting the new hostname
-sudo nixos-rebuild switch --flake /etc/nixos/#${hostname}
+astra-install
 ```
 
-Fourth, reboot and if all went well you should have the system configuration!
+You will be asked to:
 
-> [!NOTE]
-> The `astra` user will be created if it doesn't already exist, and the
-> hostname will be updated to the one you specified.
+1. Pick a host (`antenna`, `clucky`, `deck`, `panda`, `testbed`).
+2. Pick the target disk.
+3. Confirm.
 
-You'll also need to rekey the agenix secrets. Instructions for doing so can be
-found in [`system/secrets/README.md`](./system/secrets/README.md).
+The installer partitions the disk with the ASTRA layout, mounts it, and runs
+`nixos-install` for the chosen host. After it finishes, reboot when prompted.
 
 ### Testing the Flake
 
@@ -109,6 +84,9 @@ can do the following:
 ```bash
 # navigate to wherever you cloned the repo
 cd path/to/flake/
+
+# check if the flake is valid
+nix flake check
 
 # attempt to build the flake
 nixos-rebuild build --flake .#${hostname}
@@ -130,9 +108,12 @@ The configured channels can be seen in [`flake.nix`](./flake.nix).
 - `nix-ros-overlay`: ROS2
 - `nixpkgs`: Main set of packages.
 - `hardware`: Hardware-specific configuration, especially for NVIDIA drivers.
+- `disko`: Declarative drive partitioning.
 - `home-manager`: Manage user-level configurations.
 - `basestation-cameras`: Gstreamer cameras app.
 - `agenix`: Encrypted secrets management.
+- `vscode-server`: Patches VSCode Server to work on NixOS.
+- `treefmt-nix`: Formats the project.
 
 ## Rationale
 

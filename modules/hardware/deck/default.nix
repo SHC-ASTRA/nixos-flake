@@ -1,7 +1,9 @@
 { pkgs, ... }:
 {
   imports = [
-    ./hardware-configuration.nix
+    ../common
+    ../common/cpu-amd.nix
+    ../../disko
     ./network.nix
   ];
 
