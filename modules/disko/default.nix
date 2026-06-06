@@ -27,16 +27,6 @@
             ];
           };
         };
-        swap = {
-          size = "8G";
-          content = {
-            type = "swap";
-            extraArgs = [
-              "-L"
-              "ASTRASWAP"
-            ];
-          };
-        };
         root = {
           size = "100%";
           content = {
@@ -63,6 +53,10 @@
                   "space_cache=v2"
                   "nodatacow"
                 ];
+              };
+              "@swap" = {
+                mountpoint = "/swap";
+                swap.swapfile.size = "8G";
               };
             };
           };
