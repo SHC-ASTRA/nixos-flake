@@ -51,15 +51,17 @@ sudo nixos-rebuild boot
 > The installer erases the selected disk. Only run it on a system where this
 > is okay.
 
-Build the installer ISO:
+First, either download the latest ISO from the [actions page](https://github.com/SHC-ASTRA/nixos-flake/actions?query=workflow%3A%22Build+installer+ISO%22+is%3Asuccess+branch%3Amain)
+or build it with the following command:
 
 ```bash
 nix build .#installer
 ```
 
-The image will end up at `./result/iso/astra-installer-*.iso`. Write it to a USB flash
-drive that is >=2GB using your favorite flashing software. I recommend
-[balenaEtcher](https://etcher.balena.io/) or the `dd` command.
+The image will end up at `./result/iso/astra-installer-*.iso` after you build it.
+
+Write the image to a USB flash drive that is >=2GB using your favorite flashing
+software. I recommend [balenaEtcher](https://etcher.balena.io/) or the `dd` command.
 
 Once booted, run the installer and follow the prompts:
 
