@@ -1,5 +1,5 @@
 {
-  description = "Home Manager configuration of ASTRA";
+  description = "NixOS configurations for ASTRA";
 
   inputs = {
     nix-ros-overlay.url = "github:lopsided98/nix-ros-overlay/master";
@@ -30,163 +30,38 @@
   outputs =
     inputs@{
       self,
-      nix-ros-overlay,
       nixpkgs,
-      home-manager,
-      basestation-cameras,
-      hardware,
-      vscode-server,
       ...
     }:
     let
       system = "x86_64-linux";
-      username = "astra";
 
-      # Obtains the function mkHost passing 'inputs' and 'system'
-      mkHost = import ./lib/mkHost.nix { inherit inputs system; };
+      baseModules = [
+        inputs.nix-ros-overlay.nixosModules.default
+        inputs.agenix.nixosModules.default
+        inputs.vscode-server.nixosModules.default
+        { services.vscode-server.enable = true; }
+        ./modules/nixos
+        ./modules/home-manager
+      ];
 
-      hostsConfig = {
-        antenna = {
-          ip = "192.168.1.33";
-          isGraphical = false;
-          isNvidia = false;
+      mkSystem =
+        hardwareModule:
+        nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs; };
+          modules = baseModules ++ [ hardwareModule ];
         };
-        clucky = {
-          ip = "192.168.1.69";
-          isGraphical = false;
-          isNvidia = true;
-        };
-        deck = {
-          ip = "192.168.1.31";
-          isGraphical = true;
-          isNvidia = false;
-        };
-        panda = {
-          ip = "192.168.1.32";
-          isGraphical = true;
-          isNvidia = false;
-        };
-        testbed = {
-          ip = "192.168.1.70";
-          isGraphical = false;
-          isNvidia = true;
-        };
-        nixos = {
-          ip = "";
-          isGraphical = true;
-          isNvidia = false;
-        };
-      };
-
-      # Generates hosts for each system based on hostsConfig
-      hosts = {
-        antenna = mkHost {
-          name = "antenna";
-          inherit username;
-
-          extraSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.antenna;
-            hosts = hostsConfig;
-          };
-          homeSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.antenna;
-            hosts = hostsConfig;
-          };
-          isGraphical = hostsConfig.antenna.isGraphical;
-        };
-
-        clucky = mkHost {
-          name = "clucky";
-          inherit username;
-
-          extraSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.clucky;
-            hosts = hostsConfig;
-          };
-          homeSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.clucky;
-            hosts = hostsConfig;
-          };
-          isGraphical = hostsConfig.clucky.isGraphical;
-          isNvidia = hostsConfig.clucky.isNvidia;
-        };
-
-        testbed = mkHost {
-          name = "testbed";
-          inherit username;
-
-          extraSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.testbed;
-            hosts = hostsConfig;
-          };
-          homeSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.testbed;
-            hosts = hostsConfig;
-          };
-          isGraphical = hostsConfig.testbed.isGraphical;
-          isNvidia = hostsConfig.testbed.isNvidia;
-        };
-
-        deck = mkHost {
-          name = "deck";
-          inherit username;
-
-          extraSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.deck;
-            hosts = hostsConfig;
-          };
-          homeSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.deck;
-            hosts = hostsConfig;
-          };
-          isGraphical = hostsConfig.deck.isGraphical;
-        };
-
-        panda = mkHost {
-          name = "panda";
-          inherit username;
-
-          extraSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.panda;
-            hosts = hostsConfig;
-          };
-          homeSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.panda;
-            hosts = hostsConfig;
-          };
-          isGraphical = hostsConfig.panda.isGraphical;
-        };
-
-        nixos = mkHost {
-          name = "nixos";
-          inherit username;
-
-          extraSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.nixos;
-            hosts = hostsConfig;
-          };
-          homeSpecialArgs = {
-            inherit self inputs;
-            host = hostsConfig.nixos;
-            hosts = hostsConfig;
-          };
-          isGraphical = hostsConfig.nixos.isGraphical;
-        };
-      };
     in
     {
-      nixosConfigurations = builtins.mapAttrs (name: host: host.nixosConfig) hosts;
+      nixosConfigurations = {
+        antenna = mkSystem ./modules/hardware/antenna;
+        clucky = mkSystem ./modules/hardware/clucky;
+        deck = mkSystem ./modules/hardware/deck;
+        panda = mkSystem ./modules/hardware/panda;
+        testbed = mkSystem ./modules/hardware/testbed;
+        nixos = mkSystem ./modules/hardware/nixos;
+      };
 
       formatter.${system} =
         (inputs.treefmt-nix.lib.evalModule nixpkgs.legacyPackages.${system} ./treefmt.nix)
