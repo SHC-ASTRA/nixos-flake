@@ -1,5 +1,5 @@
 {
-  device ? "/dev/nvme0n1",
+  device,
   ...
 }:
 {
@@ -9,7 +9,7 @@
     content = {
       type = "gpt";
       partitions = {
-        ESP = {
+        ESP = { # boot partition
           priority = 1;
           size = "512M";
           type = "EF00";
@@ -17,46 +17,53 @@
             type = "filesystem";
             format = "vfat";
             mountpoint = "/boot";
-            mountOptions = [
+            mountOptions = [ # this works out to 755 (u:rwx, g:r-x, o:r-x)
               "fmask=0022"
               "dmask=0022"
             ];
-            extraArgs = [
+            extraArgs = [ # sets the partition label
               "-n"
               "ASTRABOOT"
             ];
           };
         };
-        root = {
+        root = { # root partition
           size = "100%";
           content = {
             type = "btrfs";
-            extraArgs = [
+            extraArgs = [ # sets the partition label
               "-L"
               "ASTRAROOT"
               "-f"
             ];
             subvolumes = {
-              "@" = {
+              "@" = { # main subvolume
                 mountpoint = "/";
                 mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                  "space_cache=v2"
+                  "compress=zstd" # compress the filesystem
+                  "noatime" # disable access time tracking (because who cares)
                 ];
               };
-              "@nix" = {
+              "@nix" = { # nix subvolume (incl store)
                 mountpoint = "/nix";
                 mountOptions = [
-                  "compress=zstd"
-                  "noatime"
-                  "space_cache=v2"
-                  "nodatacow"
+                  "compress=zstd" # compress the filesystem
+		  # disabling time tracking can save a bit of storage and cpu time
+                  "noatime" # disable access time tracking
+		  "noctime" # disable create time tracking
+		  "nomtime" # disable modify time tracking
                 ];
               };
-              "@swap" = {
+	      "@home" = { # home subvolume
+	        mountpoint = "/home";
+		mountOptions = [
+                  "compress=zstd" # compress the filesystem
+                  "noatime" # disable access time tracking
+		];
+	      };
+              "@swap" = { # swapfile subvolume
                 mountpoint = "/swap";
-                swap.swapfile.size = "8G";
+                swap.swapfile.size = "4G";
               };
             };
           };
