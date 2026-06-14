@@ -2,9 +2,9 @@
 {
   options.astra = {
     role = {
-      rover.enable = lib.mkEnableOption "rover (clucky/testbed): NVIDIA, ROS2 autostart, no-sleep, static IP on enp85s0, hostapd";
-      antenna.enable = lib.mkEnableOption "tracking antenna: PTZ restream, no-sleep";
-      basestation.enable = lib.mkEnableOption "basestation (deck/panda): Hyprland + GNOME desktop";
+      rover.enable = lib.mkEnableOption "clucky and testbed";
+      antenna.enable = lib.mkEnableOption "antenna";
+      basestation.enable = lib.mkEnableOption "deck and panda";
     };
 
     hosts = lib.mkOption {
