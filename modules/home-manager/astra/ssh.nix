@@ -1,5 +1,6 @@
 { osConfig, lib, ... }:
 let
+  # map hostname -> ip for the ssh config
   mkHostBlocks = name: cfg: {
     "${name}" = {
       hostname = cfg.ip;
@@ -18,6 +19,8 @@ in
     enable = true;
 
     enableDefaultConfig = false;
+    # have it try the public key before prompting for a password
+    # define the default public key
     extraConfig = ''
       PreferredAuthentications publickey,password
       IdentityFile /home/astra/.ssh/id_ed25519
@@ -25,7 +28,7 @@ in
     matchBlocks = {
       "*" = {
         addKeysToAgent = "yes";
-        forwardAgent = true;
+        forwardAgent = true; # useful for ssh-in-ssh
         compression = true;
       };
       "git@github.com" = {
