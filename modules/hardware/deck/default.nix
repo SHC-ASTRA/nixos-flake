@@ -1,4 +1,4 @@
-{ pkgs, ... }:
+{ ... }:
 {
   imports = [
     ../common
@@ -9,8 +9,4 @@
 
   networking.hostName = "deck";
   astra.role.basestation.enable = true;
-
-  environment.systemPackages = with pkgs; [
-    zed-editor
-  ];
 }

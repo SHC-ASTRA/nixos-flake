@@ -17,6 +17,7 @@
         keepassxc
         vscode-fhs # Needed for basestation-classic
         gnome-keyring
+	zed-editor
 
         # GStreamer
         gst_all_1.gstreamer
