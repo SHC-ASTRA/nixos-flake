@@ -12,6 +12,7 @@
       [
         # Apps
         vlc
+	mpv
         kitty
         nautilus
         keepassxc
