@@ -110,20 +110,6 @@ sudo nixos-rebuild test
 This will rebuild your current hostname's flake and activate the configuration,
 but not persist it across reboots.
 
-## Channels
-
-The configured channels can be seen in [`flake.nix`](./flake.nix).
-
-- `nix-ros-overlay`: ROS2
-- `nixpkgs`: Main set of packages.
-- `hardware`: Hardware-specific configuration, especially for NVIDIA drivers.
-- `disko`: Declarative drive partitioning.
-- `home-manager`: Manage user-level configurations.
-- `basestation-cameras`: Gstreamer cameras app.
-- `agenix`: Encrypted secrets management.
-- `vscode-server`: Patches VSCode Server to work on NixOS.
-- `treefmt-nix`: Formats the project.
-
 ## Rationale
 
 Using NixOS lets us ensure we have the same configuration between our various

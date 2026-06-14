@@ -2,21 +2,34 @@
   description = "NixOS configurations for ASTRA";
 
   inputs = {
+    # ROS2
     nix-ros-overlay.url = "github:lopsided98/nix-ros-overlay/master";
+
+    # Main set of packages
     nixpkgs.follows = "nix-ros-overlay/nixpkgs";
+
+    # Hardware-specific configuration, especially for NVIDIA drivers
     hardware.url = "github:nixos/nixos-hardware";
+
+    # Declarative drive partitioning
     disko = {
       url = "github:nix-community/disko";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Manage user-level configurations
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Gstreamer cameras app
     basestation-cameras = {
       url = "github:SHC-ASTRA/basestation-cameras";
       inputs.nixpkgs.follows = "nixpkgs";
     };
+
+    # Encrypted secrets management
     agenix = {
       url = "github:ryantm/agenix";
       inputs = {
@@ -24,7 +37,11 @@
         darwin.follows = "";
       };
     };
+
+    # Patches VSCode Server to work on NixOS
     vscode-server.url = "github:nix-community/nixos-vscode-server";
+
+    # Formats the project (with `nix fmt`)
     treefmt-nix = {
       url = "github:numtide/treefmt-nix";
       inputs.nixpkgs.follows = "nixpkgs";
