@@ -38,7 +38,8 @@
     networking.firewall = {
       allowedTCPPorts = [ 8554 ]; # rtsp
       allowedUDPPortRanges = [
-        { # mediamtx
+        {
+          # mediamtx
           from = 8000;
           to = 8001;
         }

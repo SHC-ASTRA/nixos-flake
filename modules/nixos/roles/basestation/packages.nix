@@ -12,13 +12,13 @@
       [
         # Apps
         vlc
-	mpv
+        mpv
         kitty
         nautilus
         keepassxc
         vscode-fhs # Needed for basestation-classic
         gnome-keyring
-	zed-editor
+        zed-editor
 
         # GStreamer
         gst_all_1.gstreamer
