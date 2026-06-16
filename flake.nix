@@ -102,6 +102,11 @@
           act
           gh
         ];
+        shellHook = ''
+          if ! command -v docker >/dev/null 2>&1; then
+            echo "warning: docker not found. \`act\` requires docker to test workflows" >&2
+          fi
+        '';
       };
 
       formatter.${system} =
