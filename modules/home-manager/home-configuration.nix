@@ -8,30 +8,14 @@
   home = {
     packages = with pkgs; [
       nil
-      zsh-nix-shell
     ];
 
     sessionVariables = {
       EDITOR = "nvim";
     };
-
-    shell.enableBashIntegration = true;
   };
 
   programs = {
-    bash = {
-      enable = true;
-      enableCompletion = true;
-      shellAliases = {
-        la = "ls -alh";
-        neofetch = "fastfetch";
-      };
-      profileExtra = ''
-        eval `ssh-agent`
-        [[ -e ~/.ssh/id_ed25519 ]] && ssh-add ~/.ssh/id_ed25519 &> /dev/null
-      '';
-    };
-
     bat.enable = true;
 
     pay-respects.enable = true;
@@ -44,7 +28,7 @@
 
     direnv = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
       nix-direnv.enable = true;
     };
 
@@ -146,7 +130,7 @@
 
     starship = {
       enable = true;
-      enableBashIntegration = true;
+      enableZshIntegration = true;
       settings = {
 
       };
@@ -163,7 +147,6 @@
         tmuxPlugins.resurrect
       ];
 
-      shell = "${pkgs.zsh}/bin/zsh";
       terminal = "screen-256color";
     };
 
@@ -189,16 +172,16 @@
         ];
       };
 
+      shellAliases = {
+        la = "ls -alh";
+        neofetch = "fastfetch";
+      };
+
       initContent =
         let
           zshConfig =
             lib.mkOrder 1000 # sh
               ''
-                # Exit shell on Ctrl+D even if the command line is filled
-                exit_zsh() { exit }
-                zle -N exit_zsh
-                bindkey '^D' exit_zsh
-
                 bindkey -v
                 bindkey '^R' history-incremental-search-backward
 
@@ -211,7 +194,7 @@
               ''
                 # All following is ran after oh-my-zsh
 
-                # Ctrl+D exits terminal even when typing command
+                # Exit shell on Ctrl+D even if the command line is filled.
                 exit_zsh() { exit }
                 zle -N exit_zsh
                 bindkey '^D' exit_zsh
@@ -342,6 +325,9 @@
       };
     };
   };
+
+  # run the ssh-agent so we don't have to do "eval `ssh-agent`" anymore
+  services.ssh-agent.enable = true;
 
   xdg.configFile."direnv/direnv.toml".text = ''
     # https://esham.io/2023/10/direnv

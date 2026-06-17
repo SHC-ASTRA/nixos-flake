@@ -81,6 +81,7 @@
     users.users.astra = {
       isNormalUser = true;
       description = "ASTRA";
+      shell = pkgs.zsh;
       extraGroups = [
         "wheel" # allows the use of sudo
         "docker" # allows docker
@@ -102,6 +103,8 @@
     # dconf is a GNOME dep
     programs = {
       dconf.enable = true;
+      # required so zsh can be set as a login shell for the astra user
+      zsh.enable = true;
     };
 
     # we have used docker off and on for various things. keep this unless you are sure we don't need it.
