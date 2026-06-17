@@ -271,7 +271,7 @@
           nix-index # create a local, searchable index of nixpkgs
           nix-search # search the aforementioned index
           comma # quickly use packages from, you guessed it, the same index
-          bat # prettier cat
+          bat # view files with syntax highlighting
 
           # Programming
           micro # easy to use editor. has the same keybinds as traditional editors
