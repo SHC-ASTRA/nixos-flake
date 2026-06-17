@@ -7,7 +7,7 @@
     useUserPackages = true;
     extraSpecialArgs = { inherit inputs; };
     users.astra = {
-      imports = [ ./astra ];
+      imports = [ ./home-configuration.nix ];
       home.stateVersion = "26.05";
     };
   };
