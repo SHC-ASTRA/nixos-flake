@@ -60,12 +60,16 @@ in
     ];
   };
 
-  environment.etc."motd".text = ''
+  services.getty.helpLine = lib.mkForce ''
+    The "nixos" and "root" accounts have empty passwords.
 
-    ASTRA installer
+    To log in over ssh as "root", use one of the team's authorized keys (these
+    are already installed). To log in as "nixos" over ssh, set a password with
+    `passwd` or add your public key to /home/nixos/.ssh/authorized_keys.
 
-    Run `astra-install` to provision this machine.
+    To set up a wireless connection, run `impala`.
 
+    To provision this machine, run `astra-install`.
   '';
 
   users.users.root.openssh.authorizedKeys.keys = import ../nixos/agenix/authorized_keys.nix;
