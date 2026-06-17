@@ -17,7 +17,6 @@
         nautilus
         keepassxc
         gnome-keyring
-        zed-editor
 
         # GStreamer
         gst_all_1.gstreamer
