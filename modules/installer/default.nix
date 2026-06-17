@@ -24,11 +24,6 @@ in
 
   image.baseName = lib.mkForce "astra-installer";
 
-  boot.kernelParams = [
-    "console=ttyS0,115200"
-    "console=tty1"
-  ];
-
   # useful tools to have on a recovery / reinstall ISO
   environment.systemPackages = with pkgs; [
     astra-install
