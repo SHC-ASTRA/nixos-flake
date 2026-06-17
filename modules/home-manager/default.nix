@@ -8,7 +8,7 @@
     extraSpecialArgs = { inherit inputs; };
     users.astra = {
       imports = [ ./home-configuration.nix ];
-      home.stateVersion = "26.05";
+      home.stateVersion = "25.05";
     };
   };
 }
