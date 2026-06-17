@@ -56,6 +56,12 @@ in
     };
 
     firewall.enable = false;
+
+    # map each host's LAN IP to <name>.lan in /etc/hosts
+    hosts = lib.mapAttrs' (name: host: {
+      name = host.ip;
+      value = [ "${name}.lan" ];
+    }) config.astra.hosts;
   };
 
   systemd.network.networks = {
