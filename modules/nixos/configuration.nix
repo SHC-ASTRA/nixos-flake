@@ -5,23 +5,15 @@
   inputs,
   ...
 }:
-let
-  uahNetworks = {
-    "Student5" = "Go Chargers!";
-    "Staff5" = "Where is the coffee?";
-    "Faculty5" = "You will be tested";
-  };
-  mkPsk = passphrase: ''
-    [Security]
-    Passphrase=${passphrase}
-  '';
-in
 {
+  # options that define our systems.
+  # options are accessible in every module which makes them especially useful
   options.astra = {
+    # features are provided in sets we call "roles".
     role = {
-      rover.enable = lib.mkEnableOption "clucky and testbed";
-      antenna.enable = lib.mkEnableOption "antenna";
-      basestation.enable = lib.mkEnableOption "deck and panda";
+      rover.enable = lib.mkEnableOption "headless environment with rover stuff";
+      antenna.enable = lib.mkEnableOption "headless environment with antenna stuff";
+      basestation.enable = lib.mkEnableOption "graphical environment with basestation things";
     };
 
     hosts = lib.mkOption {
@@ -70,18 +62,22 @@ in
     };
 
     nix.settings = {
+      # these ensure that flakes work properly
       experimental-features = [
         "nix-command"
         "flakes"
       ];
+      # doing this lets astra accept extra substituters
       trusted-users = [
         "root"
         "astra"
       ];
     };
 
+    # overwrite /etc/shadow, /etc/group, and /etc/passwd so they don't drift from the config
     users.mutableUsers = false;
 
+    # main login user
     users.users.astra = {
       isNormalUser = true;
       description = "ASTRA";
@@ -96,21 +92,28 @@ in
       # this is technically bad practice to publish, but everyone already knows this password anyways
       hashedPassword = "$y$j9T$esraCMpX2wws6dAC7ypZO.$mz7g5Fgu42MGy/AS56x9IcytnK1LgG4YSUIZGcvbRm9";
 
+      # allow ssh from all of the same users that can decrypt the secrets
       openssh.authorizedKeys.keys = import ./agenix/authorized_keys.nix;
     };
 
+    # by default, software with unfree licenses will not evaluate. we want some unfree stuff so this fixes that
     nixpkgs.config.allowUnfree = true;
 
+    # dconf is a GNOME dep
     programs = {
       dconf.enable = true;
     };
 
+    # we have used docker off and on for various things. keep this unless you are sure we don't need it.
     virtualisation.docker.enable = true;
 
     services = {
+      # let the logged in user use controllers (thanks valve)
       udev.packages = with pkgs; [
         steam-devices-udev-rules
       ];
+
+      # useful ros tools to have. also opens the firewall.
       ros2 = {
         enable = true;
         distro = "humble";
@@ -124,12 +127,13 @@ in
             ros2cli
             ros2run
           ])
-          ++ lib.optionals config.astra.role.rover.enable [ p.realsense2-camera ]
-          ++ lib.optionals config.astra.role.basestation.enable [ p.rqt-graph ];
+          ++ lib.optionals config.astra.role.basestation.enable [ p.rqt-graph ]
+          # we have a systemd service that uses this
+          ++ lib.optionals config.astra.role.rover.enable [ p.realsense2-camera ];
       };
 
+      # pipewire is the modern audio stack option, so we disable pulseaudio and enable the compatibility feature.
       pulseaudio.enable = false;
-
       pipewire = {
         enable = true;
         alsa.enable = true;
@@ -137,10 +141,12 @@ in
         pulse.enable = true;
       };
 
+      # allow remote control over ssh
       openssh = {
         enable = true;
         settings = {
           UseDns = true;
+          # generally considered bad practice
           PasswordAuthentication = true;
           PermitRootLogin = "no";
           X11Forwarding = true;
@@ -148,6 +154,7 @@ in
         };
       };
 
+      # lets devices be discovered via <hostname>.local. useful when not plugged in over ethernet.
       avahi = {
         enable = true;
         nssmdns4 = true;
@@ -161,8 +168,10 @@ in
       };
     };
 
+    # allow unprivileged users to set higher thread priority (lower niceness)
     security.rtkit.enable = true;
 
+    # this one is pretty straightforward
     hardware = {
       bluetooth = {
         enable = true;
@@ -171,6 +180,7 @@ in
     };
 
     systemd = {
+      # there will be no rest. this is ASTRA.
       targets = {
         sleep.enable = false;
         suspend.enable = false;
@@ -178,6 +188,9 @@ in
         hybrid-sleep.enable = false;
       };
 
+      # this is a weird one. the steam udev rules use the `uaccess` tag, which means they only apply to the user with the active tty. normally this is fine,
+      #   but on testbed and clucky there is no logged in user at all, let alone one with an active tty. getty lets us automatically log into tty1 so that
+      #   controllers will still work for headless purposes. technically not required for non-rover systems as far as i can tell, but also won't hurt anything.
       services."getty@tty1" = {
         overrideStrategy = "asDropin";
         serviceConfig.ExecStart = [
@@ -186,7 +199,11 @@ in
         ];
       };
 
+      # networking settings. general info on our networking setup:
+      #   - systemd-networkd manages general networking
+      #   - iwd manages wifi
       network = {
+        # systemd-networkd config
         enable = true;
         networks = {
           # any ethernet interface gets the devices assigned IP on the ASTRA LAN
@@ -195,15 +212,17 @@ in
               Type = "ether";
               Kind = "!*"; # skip bridges/bonds/etc
             };
+            # grab the ip for the current hostname and set the subnet mask to /24
             address = [ "${config.astra.hosts.${config.networking.hostName}.ip}/24" ];
             networkConfig.DHCP = "no";
-            linkConfig.RequiredForOnline = "no";
+            linkConfig.RequiredForOnline = "no"; # important for headless & deck (where there might be no ethernet)
           };
           "40-wireless" = {
             matchConfig.Type = "wlan";
             networkConfig.DHCP = "yes";
           };
           "30-can" = {
+            # if you ever switch off of systemd-networkd, check out commit c62ca53c1005b1bd7d037d75c688c2700dfa092d
             matchConfig.Name = "can*";
             canConfig.BitRate = "1M";
             linkConfig.RequiredForOnline = "no";
@@ -212,73 +231,10 @@ in
       };
     };
 
-    # hardcoded UAH wifi PSKs go into /var/lib/iwd at activation
-    environment = {
-      etc = lib.mapAttrs' (ssid: passphrase: {
-        name = "iwd/${ssid}.psk";
-        value = {
-          text = mkPsk passphrase;
-          mode = "0600";
-        };
-      }) uahNetworks;
-
-      sessionVariables.EDITOR = "nvim";
-
-      shellAliases = {
-        vim = "nvim";
-      };
-
-      systemPackages =
-        with pkgs;
-        [
-          # Network
-          xorg.xauth # required for x forwarding to configure security
-          impala # iwd TUI
-
-          # System
-          gh
-          socat
-          usbutils
-          silver-searcher
-          wl-clipboard
-          btop
-          tree
-          ripgrep
-          comma
-          bat
-
-          # Programming
-          micro
-          nil
-          nixd
-          neovim
-          ripgrep
-          nixfmt-rfc-style
-          tmux
-          platformio
-
-          # Build stuff
-          gcc
-          colcon
-          gnumake
-          python312Packages.pyserial
-        ]
-        ++ (with inputs.basestation-cameras.packages.${pkgs.system}; [
-          cameracli
-          pkgs.parallel # i don't know how to fix this
-        ])
-        ++ [
-          inputs.agenix.packages.${pkgs.system}.default
-        ];
-    };
-
-    system.activationScripts.iwd-networks.text = ''
-      install -d -m 0700 /var/lib/iwd
-      install -m 0600 /etc/iwd/*.psk /var/lib/iwd/
-    '';
-
+    # iwd handles wifi for us
+    # we don't use NetworkManager because it is a pain to configure programatically. if you take a look below (in environment.etc) you can see how dummy easy
+    #   it is to configure wifi networks with iwd. there is also a great TUI tool called impala that replaces nmtui.
     networking = {
-      # use systemd-networkd and iwd
       networkmanager.enable = false;
       useDHCP = false;
       wireless.enable = false;
@@ -295,6 +251,7 @@ in
         };
       };
 
+      # TODO: enable this
       firewall.enable = false;
 
       # map each host's LAN IP to <name>.lan in /etc/hosts
@@ -304,6 +261,83 @@ in
       }) config.astra.hosts;
     };
 
+    # dunno about you but i'm tired of putting in the same wifi password over and over.
+    # set proper permissions on iwd stuff and copy the wifi networks over
+    system.activationScripts.iwd-networks.text = ''
+      install -d -m 0700 /var/lib/iwd
+      install -m 0600 /etc/iwd/*.psk /var/lib/iwd/
+    '';
+    environment = {
+      etc =
+        lib.mapAttrs'
+          (ssid: passphrase: {
+            name = "iwd/${ssid}.psk";
+            value = {
+              text = ''
+                [Security]
+                Passphrase=${passphrase}
+              '';
+              mode = "0600";
+            };
+          })
+          {
+            # uah non-eduroam networks
+            "Student5" = "Go Chargers!";
+            "Staff5" = "Where is the coffee?";
+            "Faculty5" = "You will be tested";
+          };
+
+      # most of the neovim config is in modules/home-manager
+      sessionVariables.EDITOR = "nvim";
+      shellAliases = {
+        vim = "nvim";
+      };
+
+      systemPackages =
+        with pkgs;
+        [
+          # Network
+          xorg.xauth # required for x forwarding to configure security
+          impala # iwd TUI
+
+          # System
+          gh
+          socat # talk to sockets directly
+          usbutils # provides lsusb among others
+          silver-searcher # ag is a fast file searcher
+          wl-clipboard # programatically interact with the wayland clipboard
+          btop # pretty system monitor
+          tree # prints out directory structures
+          ripgrep # another file search tool, this one optimized for regex
+          nix-index # create a local, searchable index of nixpkgs
+          nix-search # search the aforementioned index
+          comma # quickly use packages from, you guessed it, the same index
+          bat # prettier cat
+
+          # Programming
+          micro # easy to use editor. has the same keybinds as traditional editors
+          nil # lsp for nix
+          nixd # othermoredifferent lsp for nix
+          neovim # vim (more powerful editor, but with a learning curve) with lsp support
+          nixfmt # format nix files
+          tmux # terminal multiplexer
+          platformio # flash MCUs
+
+          # Build stuff
+          gcc # GNU C/C++ Compiler
+          colcon # ROS2 build system
+          gnumake
+          python312Packages.pyserial # talk to serial devices in python
+        ]
+        ++ (with inputs.basestation-cameras.packages.${pkgs.system}; [
+          cameracli # cli to list connected cameras
+        ])
+        ++ [
+          inputs.agenix.packages.${pkgs.system}.default # encryption for nix configurations
+        ];
+    };
+
+    # decrypt the ssh private key and symlink it to astra's .ssh
     age.secrets = {
       id_ed25519-key = {
         file = ./agenix/id_ed25519-key.age;
@@ -313,7 +347,12 @@ in
         group = "users";
       };
     };
+    # if we don't do this, .ssh may be owned by root which will cause home manager to fail to write the ssh config
+    system.activationScripts.age.text = ''
+      chown -R astra:users /home/astra/.ssh
+    '';
 
+    # don't change this unless you've properly migrated the state (or you know you're reinstalling on every version)
     system.stateVersion = "25.05";
   };
 }
