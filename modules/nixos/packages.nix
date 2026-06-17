@@ -24,6 +24,7 @@
         ripgrep
         nixfmt-rfc-style
         tmux
+        platformio
 
         # Build stuff
         gcc

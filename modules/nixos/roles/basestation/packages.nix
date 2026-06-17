@@ -16,7 +16,6 @@
         kitty
         nautilus
         keepassxc
-        vscode-fhs # Needed for basestation-classic
         gnome-keyring
         zed-editor
 
