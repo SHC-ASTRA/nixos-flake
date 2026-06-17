@@ -14,6 +14,11 @@
     "sd_mod"
     "sdhci_pci"
     "rtsx_usb_sdmmc"
+    # only active in VMs
+    "virtio_pci"
+    "virtio_blk"
+    "virtio_scsi"
+    "virtio_net"
   ];
   boot.initrd.kernelModules = [ ];
   boot.extraModulePackages = [ ];
