@@ -86,8 +86,8 @@
           ros-core
           ros2cli
           ros2run
-          realsense2-camera
         ])
+        ++ lib.optionals config.astra.role.rover.enable [ p.realsense2-camera ]
         ++ lib.optionals config.astra.role.basestation.enable [ p.rqt-graph ];
     };
 
