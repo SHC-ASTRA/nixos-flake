@@ -337,6 +337,15 @@
         ];
     };
 
+    # make /home/astra/.ssh owned by astra so agenix doesn't make it as root when it puts the key in.
+    # without this, home-manager can't write the ssh config.
+    # `d` will create the directory
+    # `Z` will update permissions on an existing directory
+    systemd.tmpfiles.rules = [
+      "d /home/astra/.ssh 0700 astra users -"
+      "Z /home/astra/.ssh 0700 astra users -"
+    ];
+
     # decrypt the ssh private key and symlink it to astra's .ssh
     age.secrets = {
       id_ed25519-key = {
@@ -347,10 +356,6 @@
         group = "users";
       };
     };
-    # if we don't do this, .ssh may be owned by root which will cause home manager to fail to write the ssh config
-    system.activationScripts.age.text = ''
-      chown -R astra:users /home/astra/.ssh
-    '';
 
     # don't change this unless you've properly migrated the state (or you know you're reinstalling on every version)
     system.stateVersion = "25.05";
