@@ -74,14 +74,6 @@
           specialArgs = { inherit inputs; };
           modules = baseModules ++ [ hardwareModule ];
         };
-
-      mkInstaller =
-        module:
-        nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs; };
-          modules = [ module ];
-        };
     in
     {
       nixosConfigurations = {
@@ -90,7 +82,11 @@
         deck = mkSystem ./modules/hardware/deck;
         panda = mkSystem ./modules/hardware/panda;
         testbed = mkSystem ./modules/hardware/testbed;
-        installer = mkInstaller ./modules/installer;
+        installer = nixpkgs.lib.nixosSystem {
+          inherit system;
+          specialArgs = { inherit inputs; };
+          modules = [ ./modules/installer ];
+        };
       };
 
       packages.${system}.installer = self.nixosConfigurations.installer.config.system.build.isoImage;
