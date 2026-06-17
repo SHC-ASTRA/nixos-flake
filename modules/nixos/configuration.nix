@@ -25,6 +25,13 @@
       default = { };
       description = "Known astra hosts and their LAN IPs.";
     };
+
+    # roles add ROS2 packages here. `services.ros2.systemPackages` is untyped, so it can only be set in one place
+    extraRos2Packages = lib.mkOption {
+      type = lib.types.listOf (lib.types.functionTo (lib.types.listOf lib.types.package));
+      default = [ ];
+      description = "ROS2 package selectors (p: [ ... ]) added to by roles.";
+    };
   };
 
   config = {
@@ -130,9 +137,7 @@
             ros2cli
             ros2run
           ])
-          ++ lib.optionals config.astra.role.basestation.enable [ p.rqt-graph ]
-          # we have a systemd service that uses this
-          ++ lib.optionals config.astra.role.rover.enable [ p.realsense2-camera ];
+          ++ lib.concatMap (f: f p) config.astra.extraRos2Packages;
       };
 
       # pipewire is the modern audio stack option, so we disable pulseaudio and enable the compatibility feature.

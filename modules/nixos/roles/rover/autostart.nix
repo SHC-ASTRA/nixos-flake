@@ -1,6 +1,9 @@
 { config, lib, ... }:
 {
   config = lib.mkIf config.astra.role.rover.enable {
+    # used by the realsense2_camera systemd service below
+    astra.extraRos2Packages = [ (p: [ p.realsense2-camera ]) ];
+
     systemd.user.services =
       let
         inShell = f: ''

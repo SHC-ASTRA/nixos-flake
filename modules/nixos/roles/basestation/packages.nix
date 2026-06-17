@@ -7,6 +7,8 @@
 }:
 {
   config = lib.mkIf config.astra.role.basestation.enable {
+    astra.extraRos2Packages = [ (p: [ p.rqt-graph ]) ];
+
     environment.systemPackages =
       with pkgs;
       [
