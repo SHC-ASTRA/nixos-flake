@@ -18,6 +18,7 @@ in
 {
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
+    ../nixos/wifi.nix
   ];
 
   image.baseName = lib.mkForce "astra-installer";
