@@ -26,7 +26,7 @@
         };
         astra_rosbag = {
           enable = true;
-          description = "Record a rosbag on boot to ~/bags/";
+          description = "Record a rosbag on boot to /tmp/bags/";
           after = [ "default.target" ];
           requires = [ "default.target" ];
           wantedBy = [ "default.target" ];
@@ -37,6 +37,7 @@
             RestartSec = 5;
             Environment = ''
               PYTHONUNBUFFERED=1
+              BAG_LOCATION=/tmp/bags
             '';
           };
         };
