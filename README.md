@@ -85,6 +85,9 @@ You will be asked to:
 The installer partitions the disk with the ASTRA layout, mounts it, and runs
 `nixos-install` for the chosen host. After it finishes, reboot when prompted.
 
+You'll also need to rekey the agenix secrets. Instructions for doing so can be
+found in [`modules/nixos/agenix/README.md`](./modules/nixos/agenix/README.md).
+
 ### Testing the Flake
 
 If you're on a non-ASTRA system and you just want to see if it would build, you
