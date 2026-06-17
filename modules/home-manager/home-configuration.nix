@@ -4,29 +4,6 @@
   osConfig,
   ...
 }:
-let
-  lock-false = {
-    Value = false;
-    Status = "locked";
-  };
-  lock-true = {
-    Value = true;
-    Status = "locked";
-  };
-
-  mkHostBlocks = name: cfg: {
-    "${name}" = {
-      hostname = cfg.ip;
-      user = "astra";
-    };
-    "${name}.local" = {
-      hostname = "${name}.local";
-      user = "astra";
-    };
-  };
-
-  hostBlocks = lib.concatMapAttrs mkHostBlocks osConfig.astra.hosts;
-in
 {
   home = {
     packages = with pkgs; [
@@ -128,29 +105,44 @@ in
       };
     };
 
-    ssh = {
-      enable = true;
+    ssh =
+      let
+        mkHostBlocks = name: cfg: {
+          "${name}" = {
+            hostname = cfg.ip;
+            user = "astra";
+          };
+          "${name}.local" = {
+            hostname = "${name}.local";
+            user = "astra";
+          };
+        };
 
-      enableDefaultConfig = false;
-      # have it try the public key before prompting for a password
-      # define the default public key
-      extraConfig = ''
-        PreferredAuthentications publickey,password
-        IdentityFile /home/astra/.ssh/id_ed25519
-      '';
-      matchBlocks = {
-        "*" = {
-          addKeysToAgent = "yes";
-          forwardAgent = true; # useful for ssh-in-ssh
-          compression = true;
-        };
-        "git@github.com" = {
-          hostname = "github.com";
-          user = "git";
-        };
-      }
-      // hostBlocks;
-    };
+        hostBlocks = lib.concatMapAttrs mkHostBlocks osConfig.astra.hosts;
+      in
+      {
+        enable = true;
+
+        enableDefaultConfig = false;
+        # have it try the public key before prompting for a password
+        # define the default public key
+        extraConfig = ''
+          PreferredAuthentications publickey,password
+          IdentityFile /home/astra/.ssh/id_ed25519
+        '';
+        matchBlocks = {
+          "*" = {
+            addKeysToAgent = "yes";
+            forwardAgent = true; # useful for ssh-in-ssh
+            compression = true;
+          };
+          "git@github.com" = {
+            hostname = "github.com";
+            user = "git";
+          };
+        }
+        // hostBlocks;
+      };
 
     starship = {
       enable = true;
@@ -315,19 +307,30 @@ in
           };
         };
 
-        Preferences = {
-          "browser.warnOnQuitShortcut" = lock-false;
-          "browser.ctrlTab.sortByRecentlyUsed" = lock-true;
-          "browser.newtabpage.activity-stream.trendingSearch.defaultSearchEngine" = {
-            "Value" = "Unduck";
-            "Status" = "locked";
+        Preferences =
+          let
+            lock-false = {
+              Value = false;
+              Status = "locked";
+            };
+            lock-true = {
+              Value = true;
+              Status = "locked";
+            };
+          in
+          {
+            "browser.warnOnQuitShortcut" = lock-false;
+            "browser.ctrlTab.sortByRecentlyUsed" = lock-true;
+            "browser.newtabpage.activity-stream.trendingSearch.defaultSearchEngine" = {
+              "Value" = "Unduck";
+              "Status" = "locked";
+            };
+            "browser.urlbar.suggest.clipboard" = lock-false;
+
+            "dom.security.https_only_mode" = lock-true;
+
+            "layers.acceleration.disabled" = lock-true;
           };
-          "browser.urlbar.suggest.clipboard" = lock-false;
-
-          "dom.security.https_only_mode" = lock-true;
-
-          "layers.acceleration.disabled" = lock-true;
-        };
       };
     };
 
