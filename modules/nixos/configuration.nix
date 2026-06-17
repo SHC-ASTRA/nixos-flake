@@ -262,31 +262,31 @@
     };
 
     # dunno about you but i'm tired of putting in the same wifi password over and over.
-    # set proper permissions on iwd stuff and copy the wifi networks over
-    system.activationScripts.iwd-networks.text = ''
-      install -d -m 0700 /var/lib/iwd
-      install -m 0600 /etc/iwd/*.psk /var/lib/iwd/
-    '';
-    environment = {
-      etc =
-        lib.mapAttrs'
-          (ssid: passphrase: {
-            name = "iwd/${ssid}.psk";
-            value = {
-              text = ''
-                [Security]
-                Passphrase=${passphrase}
-              '';
-              mode = "0600";
-            };
-          })
-          {
-            # uah non-eduroam networks
-            "Student5" = "Go Chargers!";
-            "Staff5" = "Where is the coffee?";
-            "Faculty5" = "You will be tested";
-          };
+    # iwd reads .psk files from /var/lib/iwd & wants files to be mode 0600 & owned by root,
+    #   so we can't symlink to the store like i want to. instead we just make the files with
+    #   an activation script.
+    system.activationScripts.iwd-networks.text =
+      let
+        networks = {
+          # uah non-eduroam networks
+          "Student5" = "Go Chargers!";
+          "Staff5" = "Where is the coffee?";
+          "Faculty5" = "You will be tested";
+        };
+        writePsk = ssid: passphrase: ''
+          install -m 0600 /dev/null /var/lib/iwd/${ssid}.psk
+          cat > /var/lib/iwd/${ssid}.psk <<'EOF'
+          [Security]
+          Passphrase=${passphrase}
+          EOF
+        '';
+      in
+      ''
+        install -d -m 0700 /var/lib/iwd
+      ''
+      + lib.concatStrings (lib.mapAttrsToList writePsk networks);
 
+    environment = {
       # most of the neovim config is in modules/home-manager
       sessionVariables.EDITOR = "nvim";
       shellAliases = {
