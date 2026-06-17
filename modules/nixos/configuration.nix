@@ -264,11 +264,10 @@
           gh
           socat # talk to sockets directly
           usbutils # provides lsusb among others
-          silver-searcher # ag is a fast file searcher
           wl-clipboard # programatically interact with the wayland clipboard
           btop # pretty system monitor
           tree # prints out directory structures
-          ripgrep # another file search tool, this one optimized for regex
+          ripgrep # fast file searcher
           nix-index # create a local, searchable index of nixpkgs
           nix-search # search the aforementioned index
           comma # quickly use packages from, you guessed it, the same index
