@@ -55,10 +55,7 @@
                 mountpoint = "/nix";
                 mountOptions = [
                   "compress=zstd" # compress the filesystem
-                  # disabling time tracking can save a bit of storage and cpu time
                   "noatime" # disable access time tracking
-                  "noctime" # disable create time tracking
-                  "nomtime" # disable modify time tracking
                 ];
               };
               "@home" = {
