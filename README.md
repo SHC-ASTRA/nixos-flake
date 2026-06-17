@@ -4,16 +4,18 @@
 
 ## Contents
 
-- [Home Manager config `./home/`](./home/)
-- [Device-specific config `./hosts/`](./hosts/)
-  - [Tracking Antenna `./hosts/antenna/`](./hosts/antenna/)
-  - [Clucky `./hosts/clucky/`](./hosts/clucky/)
-  - [Steam Deck `./hosts/deck/`](./hosts/deck/)
-  - [Base Station Panda `./hosts/panda/`](./hosts/panda/)
-  - [Testbed `./hosts/testbed/`](./hosts/testbed/)
-- [Global system config `./system/`](./system/)
-  - [Graphical system config `./system/graphical/`](./graphical/graphical/)
-  - [Encrypted secrets `./system/secrets/`](./system/secrets/)
+- [Shared NixOS config `./modules/nixos/`](./modules/nixos/)
+  - [Roles `./modules/nixos/roles/`](./modules/nixos/roles/)
+  - [Encrypted secrets `./modules/nixos/agenix/`](./modules/nixos/agenix/)
+- [Per-host hardware config `./modules/hardware/`](./modules/hardware/)
+  - [Tracking Antenna `./modules/hardware/antenna/`](./modules/hardware/antenna/)
+  - [Clucky `./modules/hardware/clucky/`](./modules/hardware/clucky/)
+  - [Steam Deck `./modules/hardware/deck/`](./modules/hardware/deck/)
+  - [Base Station Panda `./modules/hardware/panda/`](./modules/hardware/panda/)
+  - [Testbed `./modules/hardware/testbed/`](./modules/hardware/testbed/)
+- [Home Manager config `./modules/home-manager/`](./modules/home-manager/)
+- [Disk partitioning `./modules/disko/`](./modules/disko/)
+- [Installer ISO `./modules/installer/`](./modules/installer/)
 
 ## Usage
 
