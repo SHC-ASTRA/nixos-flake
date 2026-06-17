@@ -8,4 +8,6 @@
 
   networking.hostName = "deck";
   astra.role.basestation.enable = true;
+
+  programs.steam.enable = true;
 }
