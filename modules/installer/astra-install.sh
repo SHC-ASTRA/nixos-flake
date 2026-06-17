@@ -3,6 +3,8 @@ set -euo pipefail
 
 HOSTS=(antenna clucky deck panda testbed)
 FLAKE_REF="${ASTRA_FLAKE_REF:-github:SHC-ASTRA/nixos-flake}"
+GIT_URL="${ASTRA_GIT_URL:-https://github.com/SHC-ASTRA/nixos-flake.git}"
+GIT_REF="${ASTRA_GIT_REF:-main}"
 
 while [[ $# -gt 0 ]]; do
   case "$1" in
@@ -10,14 +12,27 @@ while [[ $# -gt 0 ]]; do
     FLAKE_REF="$2"
     shift 2
     ;;
+  --git-url)
+    GIT_URL="$2"
+    shift 2
+    ;;
+  --git-ref)
+    GIT_REF="$2"
+    shift 2
+    ;;
   -h | --help)
     cat <<EOF
-Usage: astra-install [--flake <flake-ref>]
+Usage: astra-install [--flake <flake-ref>] [--git-url <url>] [--git-ref <branch>]
 
-Installs an ASTRA host onto the selected disk.
+Installs an ASTRA host onto the selected disk and clones the flake source
+into /etc/nixos so future \`nixos-rebuild\`s work out of the box.
 
-  --flake <ref>   Flake reference to install from (default: $FLAKE_REF).
-                  Set ASTRA_FLAKE_REF to override the default.
+  --flake <ref>     Flake reference to install from (default: $FLAKE_REF).
+                    Set ASTRA_FLAKE_REF to override the default.
+  --git-url <url>   Git URL to clone into /etc/nixos (default: $GIT_URL).
+                    Set ASTRA_GIT_URL to override the default.
+  --git-ref <ref>   Git branch/tag/sha to check out (default: $GIT_REF).
+                    Set ASTRA_GIT_REF to override the default.
 EOF
     exit 0
     ;;
@@ -29,7 +44,9 @@ EOF
 done
 
 echo "ASTRA installer"
-echo "  flake: $FLAKE_REF"
+echo "  flake:   $FLAKE_REF"
+echo "  git url: $GIT_URL"
+echo "  git ref: $GIT_REF"
 echo
 echo "select a host:"
 for i in "${!HOSTS[@]}"; do
@@ -80,6 +97,11 @@ echo "==> installing NixOS for host $HOST..."
 sudo nixos-install \
   --flake "${FLAKE_REF}#${HOST}" \
   --no-root-passwd
+
+echo
+echo "==> cloning $GIT_URL ($GIT_REF) into /mnt/etc/nixos..."
+sudo rm -rf /mnt/etc/nixos
+sudo git clone --branch "$GIT_REF" "$GIT_URL" /mnt/etc/nixos
 
 echo
 read -rp "install complete. reboot? [y/N]: " reboot_now

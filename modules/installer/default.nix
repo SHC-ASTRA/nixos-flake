@@ -11,6 +11,7 @@ let
       util-linux
       disko
       nixos-install-tools
+      git
     ];
     text = builtins.readFile ./astra-install.sh;
   };
