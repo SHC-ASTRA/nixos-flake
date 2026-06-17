@@ -6,15 +6,11 @@
 }:
 {
   config = lib.mkIf config.astra.role.rover.enable {
-    nixpkgs.config.allowUnfree = true;
-
     services.xserver.videoDrivers = [ "nvidia" ];
     hardware.nvidia.open = false;
     hardware.nvidia-container-toolkit.enable = true;
 
     # Docker & nvidia Runtime config
-    virtualisation.docker.enable = true;
-
     virtualisation.docker.daemon.settings = {
       runtimes = {
         nvidia = {

@@ -35,9 +35,9 @@
       };
     };
 
-    delta = {
+    difftastic = {
       enable = true;
-      enableGitIntegration = false;
+      git.enable = true;
     };
 
     neovim = {
@@ -121,9 +121,6 @@
     starship = {
       enable = true;
       enableZshIntegration = true;
-      settings = {
-
-      };
     };
 
     tmux = {
