@@ -4,7 +4,6 @@
     ../common
     ../common/cpu-amd.nix
     ../../disko
-    ./network.nix
   ];
 
   networking.hostName = "deck";

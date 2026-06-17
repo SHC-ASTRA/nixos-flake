@@ -50,7 +50,6 @@
     description = "ASTRA";
     extraGroups = [
       "wheel" # allows the use of sudo
-      "networkmanager" # allows network management
       "docker" # allows docker
       "dialout" # allows serial
       "input" # allows access to Human Interface Devices (HID) like controllers
