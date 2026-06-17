@@ -13,7 +13,7 @@
     role = {
       rover.enable = lib.mkEnableOption "headless environment with rover stuff";
       antenna.enable = lib.mkEnableOption "headless environment with antenna stuff";
-      basestation.enable = lib.mkEnableOption "graphical environment with basestation things";
+      basestation.enable = lib.mkEnableOption "graphical environment with basestation stuff";
     };
 
     hosts = lib.mkOption {
