@@ -5,19 +5,7 @@
   ...
 }:
 {
-  home = {
-    packages = with pkgs; [
-      nil
-    ];
-
-    sessionVariables = {
-      EDITOR = "nvim";
-    };
-  };
-
   programs = {
-    bat.enable = true;
-
     pay-respects.enable = true;
 
     eza = {
@@ -59,6 +47,8 @@
       viAlias = true;
       vimAlias = true;
       vimdiffAlias = true;
+
+      extraPackages = [ pkgs.nil ];
 
       plugins = with pkgs.vimPlugins; [
         # web

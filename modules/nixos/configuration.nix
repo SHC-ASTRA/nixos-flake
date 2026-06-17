@@ -319,8 +319,6 @@
 
           # Programming
           micro # easy to use editor. has the same keybinds as traditional editors
-          nil # lsp for nix
-          nixd # othermoredifferent lsp for nix
           neovim # vim (more powerful editor, but with a learning curve) with lsp support
           nixfmt # format nix files
           tmux # terminal multiplexer
