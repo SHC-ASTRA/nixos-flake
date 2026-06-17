@@ -5,8 +5,8 @@
   # we don't use NetworkManager because it is a pain to configure programatically. if you take a look below (in environment.etc) you can see how dummy easy
   #   it is to configure wifi networks with iwd. there is also a great TUI tool called impala that replaces nmtui.
   networking = {
-    networkmanager.enable = lib.mkDefault false;
-    # the minimal install CD turns wpa_supplicant on by default, force it off so it doesn't fight iwd over the radio
+    # shoot wpa_supplicant and networkmanager with a gun
+    networkmanager.enable = lib.mkForce false;
     wireless.enable = lib.mkForce false;
 
     wireless.iwd = {
