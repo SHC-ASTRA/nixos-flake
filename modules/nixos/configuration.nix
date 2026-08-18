@@ -123,7 +123,7 @@
         steam-devices-udev-rules
       ];
 
-      # useful ros tools to have. also opens the firewall.
+      # useful ros tools to have. the DDS ports it needs are opened in `networking.firewall` below.
       ros2 = {
         enable = true;
         distro = "humble";
@@ -161,6 +161,9 @@
           X11UseLocalhost = true;
         };
       };
+
+      # avahi covers name resolution for us, so turn off resolved's LLMNR to stop it listening on 5355
+      resolved.llmnr = "false";
 
       # lets devices be discovered via <hostname>.local. useful when not plugged in over ethernet.
       avahi = {
@@ -242,8 +245,40 @@
     networking = {
       useDHCP = false;
 
-      # TODO: enable this
-      firewall.enable = false;
+      firewall = {
+        enable = true;
+
+        # the ASTRA LAN is an isolated switch that we physically control, so we trust ethernet
+        #   entirely. `en+` is an iptables wildcard equivalent to the regex `en.*` on the ifname
+        # note that this wildcard syntax only works with the default iptables backend.
+        # everything below still has to be opened by hand so that we can work over wifi too.
+        trustedInterfaces = [ "en+" ];
+
+        allowedUDPPorts = [
+          49150 # `ros2 multicast send` and `ros2 multicast receive` (group 225.0.0.1)
+        ];
+
+        allowedUDPPortRanges = [
+          # ROS2 talks over DDS, which derives its ports from the RTPS well-known port scheme:
+          #   discovery multicast (group 239.255.0.1): 7400 + 250 * ROS_DOMAIN_ID
+          #   user data multicast:                     7401 + 250 * ROS_DOMAIN_ID
+          #   discovery unicast:                       7410 + 250 * ROS_DOMAIN_ID + 2 * participant
+          #   user data unicast:                       7411 + 250 * ROS_DOMAIN_ID + 2 * participant
+          # each process gets its own participant id, counting up from 0 and capped at 119, so
+          #   domain 0 (our default) fits entirely within 7400-7649.
+          {
+            from = 7400;
+            to = 7649;
+          }
+        ];
+
+        # DDS discovery is multicast, and switches with IGMP snooping stop forwarding it to us if we
+        #   never answer their membership queries. IGMP is neither TCP nor UDP, so it needs its own
+        #   rule. IPv6 does the same job with MLD, which is ICMPv6 and already allowed by default.
+        extraCommands = ''
+          iptables -A nixos-fw -p igmp -j nixos-fw-accept
+        '';
+      };
 
       # map each host's LAN IP to <name>.lan in /etc/hosts
       hosts = lib.mapAttrs' (name: host: {
