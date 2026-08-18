@@ -39,6 +39,18 @@ on this repository. I recommend using the multi-user install script. If you are 
 system with SELinux (e.g., Fedora), you must either disable enforcement (not
 recommended) or use your system's package manager if available to install Nix.
 
+To check whether SELinux is enforcing, do this:
+
+```bash
+getenforce
+```
+
+The install script will refuse to run if this prints `Enforcing`. `Permissive` and
+`Disabled` are both fine, so you only have to turn enforcement off rather than
+SELinux as a whole. If the command isn't found, you aren't on a system with SELinux.
+
+Check your distro's documentation on how to manage SELinux if it says `Enforcing`.
+
 ### Updating Flake
 
 Grab the latest changes.
