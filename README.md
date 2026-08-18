@@ -2,6 +2,15 @@
 
 [NixOS](https://nixos.org) configuration for ASTRA's computers.
 
+## Rationale
+
+Using NixOS lets us ensure we have the same configuration between our various
+machines, without having to worry about accumulating state that might cause
+differences in the field. This gives us the ability to confidently test on
+Testbed and then ship to Clucky without having to worry if some package or
+setting might be missing from one of them, and to ensure the experience between
+the Steam Deck and the Panda in the Base Station chassis are the same.
+
 ## Contents
 
 - [Shared NixOS config `./modules/nixos/`](./modules/nixos/)
@@ -27,8 +36,8 @@
 
 You must have the [Nix](https://nixos.org/download/) package manager installed to work
 on this repository. I recommend using the multi-user install script. If you are on a
-system with SELinux, you must either disable enforcement (not recommended) or use your
-system's package manager if available to install Nix.
+system with SELinux (e.g., Fedora), you must either disable enforcement (not
+recommended) or use your system's package manager if available to install Nix.
 
 ### Updating Flake
 
@@ -115,23 +124,17 @@ sudo nixos-rebuild test
 This will rebuild your current hostname's flake and activate the configuration,
 but not persist it across reboots.
 
-## Rationale
-
-Using NixOS lets us ensure we have the same configuration between our various
-machines, without having to worry about accumulating state that might cause
-differences in the field. This gives us the ability to confidently test on
-Testbed and then ship to Clucky without having to worry if some package or
-setting might be missing from one of them, and to ensure the experience between
-the Steam Deck and the Panda in the Base Station chassis are the same.
-
 ## Footnotes
 
 [^1]: The hosts are as follows:
-  - `antenna`: The Latte Panda Delta 3 installed within the Tracking Antenna.
-  - `clucky`: The Intel NUC installed within the main rover.
-  - `deck`: The Valve Steam Deck used with basestation.
-  - `panda`: The Latte Panda Delta 3 installed within basestation.
-  - `testbed`: The Intel NUC installed within the testing rover.
+
+  | Host      | Machine                                                        |
+  | --------- | -------------------------------------------------------------- |
+  | `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna. |
+  | `clucky`  | The Intel NUC installed within the main rover.                 |
+  | `deck`    | The Valve Steam Deck used with basestation.                    |
+  | `panda`   | The Latte Panda Delta 3 installed within basestation.          |
+  | `testbed` | The Intel NUC installed within the testing rover.              |
 
 [^2]: Linux references disks by their block device file which lives in `/dev`. Each
   block device file's name starts with a string corresponding to the type. For example:
