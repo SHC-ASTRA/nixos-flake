@@ -4,6 +4,9 @@
     # used by the realsense2_camera systemd service below
     astra.extraRos2Packages = [ (p: [ p.realsense2-camera ]) ];
 
+    # start the services below at boot instead of waiting for astra to log in
+    users.users.astra.linger = true;
+
     systemd.user.services =
       let
         inShell = f: ''

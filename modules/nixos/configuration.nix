@@ -123,6 +123,12 @@
         steam-devices-udev-rules
       ];
 
+      # this is a weird one. the steam udev rules use the `uaccess` tag, which means they only apply to the user who owns the active session on the seat.
+      #   normally this is fine, but on testbed and clucky there is no logged in user at all, let alone one with an active session. getty lets us
+      #   automatically log astra in so that controllers will still work for headless purposes. technically not required for non-rover systems as far as i
+      #   can tell, but also won't hurt anything.
+      getty.autologinUser = "astra";
+
       # useful ros tools to have. the DDS ports it needs are opened in `networking.firewall` below.
       ros2 = {
         enable = true;
@@ -197,17 +203,6 @@
         suspend.enable = false;
         hibernate.enable = false;
         hybrid-sleep.enable = false;
-      };
-
-      # this is a weird one. the steam udev rules use the `uaccess` tag, which means they only apply to the user with the active tty. normally this is fine,
-      #   but on testbed and clucky there is no logged in user at all, let alone one with an active tty. getty lets us automatically log into tty1 so that
-      #   controllers will still work for headless purposes. technically not required for non-rover systems as far as i can tell, but also won't hurt anything.
-      services."getty@tty1" = {
-        overrideStrategy = "asDropin";
-        serviceConfig.ExecStart = [
-          ""
-          "@${pkgs.util-linux}/sbin/agetty agetty --login-program ${config.services.getty.loginProgram} --autologin astra --noclear --keep-baud %I 115200,38400,9600 $TERM"
-        ];
       };
 
       # networking settings. general info on our networking setup:
