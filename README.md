@@ -101,8 +101,9 @@ astra-install
 
 You will be asked to:
 
-1. Pick a host.[^1]
-2. Pick the target disk.[^2]
+1. Pick a host. See [Hosts](#hosts) for the list.
+2. Pick the target disk. See [Block Device Files](#block-device-files) for how to
+   identify it.
 3. Confirm.
 
 The installer partitions the disk with the ASTRA layout, mounts it, and runs
@@ -136,42 +137,46 @@ sudo nixos-rebuild test
 This will rebuild your current hostname's flake and activate the configuration,
 but not persist it across reboots.
 
-## Footnotes
+## Reference
 
-[^1]: The hosts are as follows:
+### Hosts
 
-  | Host      | Machine                                                        |
-  | --------- | -------------------------------------------------------------- |
-  | `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna. |
-  | `clucky`  | The Intel NUC installed within the main rover.                 |
-  | `deck`    | The Valve Steam Deck used with basestation.                    |
-  | `panda`   | The Latte Panda Delta 3 installed within basestation.          |
-  | `testbed` | The Intel NUC installed within the testing rover.              |
+The hosts are as follows:
 
-[^2]: Linux references disks by their block device file which lives in `/dev`. Each
-  block device file's name starts with a string corresponding to the type. For example:
-  NVME device files start with `/dev/nvme`, SATA and USB device files start with
-  `/dev/sd`, and eMMC device files (like on the Pandas) start with `/dev/mmcblk`.
+| Host      | Machine                                                        |
+| --------- | -------------------------------------------------------------- |
+| `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna. |
+| `clucky`  | The Intel NUC installed within the main rover.                 |
+| `deck`    | The Valve Steam Deck used with basestation.                    |
+| `panda`   | The Latte Panda Delta 3 installed within basestation.          |
+| `testbed` | The Intel NUC installed within the testing rover.              |
 
-  You can list all available block device files with `sudo fdisk -l`.
+### Block Device Files
 
-  After the type, you will find the device index. This index changes based on the
-  order the kernel finds the device. For NVME and eMMC devices, the index is a number
-  and for `sd-bus` devices (SATA and USB), the index is a letter. Additionally, NVME
-  devices have an additional number that denotes their name, but it is rare to see
-  anything other than `n1`. Finally, if the device file you're looking at is for a
-  partition, it will have `pX` at the end, where X is a number`.
+Linux references disks by their block device file which lives in `/dev`. Each
+block device file's name starts with a string corresponding to the type. For example:
+NVME device files start with `/dev/nvme`, SATA and USB device files start with
+`/dev/sd`, and eMMC device files (like on the Pandas) start with `/dev/mmcblk`.
 
-  Here are some example block device files names:
+You can list all available block device files with `sudo fdisk -l`.
 
-  - `/dev/nvme0n1` - NVME device. This is what you will select for the installer on
-    `deck`.
-  - `/dev/nvme0n1p1` - NVME device partition. Do not select this as it is a partition,
-    not the whole device!
-  - `/dev/mmcblk0` - eMMC device. This is what you will select for `antenna` or
-    `panda`.
-  - `/dev/sdb` - SATA or USB device. This could either be the SATA SSD inside of one of
-    the NUCs, or it could be your installer USB. Double check the size with
-    `sudo fdisk -l`.
-  - `/dev/sda` - Another candidate for either of the NUCs' SSDs.
-  - `/dev/sdb2` - Another partition file. Do not select this!
+After the type, you will find the device index. This index changes based on the
+order the kernel finds the device. For NVME and eMMC devices, the index is a number
+and for `sd-bus` devices (SATA and USB), the index is a letter. Additionally, NVME
+devices have an additional number that denotes their name, but it is rare to see
+anything other than `n1`. Finally, if the device file you're looking at is for a
+partition, it will have `pX` at the end, where X is a number`.
+
+Here are some example block device files names:
+
+- `/dev/nvme0n1` - NVME device. This is what you will select for the installer on
+  `deck`.
+- `/dev/nvme0n1p1` - NVME device partition. Do not select this as it is a partition,
+  not the whole device!
+- `/dev/mmcblk0` - eMMC device. This is what you will select for `antenna` or
+  `panda`.
+- `/dev/sdb` - SATA or USB device. This could either be the SATA SSD inside of one of
+  the NUCs, or it could be your installer USB. Double check the size with
+  `sudo fdisk -l`.
+- `/dev/sda` - Another candidate for either of the NUCs' SSDs.
+- `/dev/sdb2` - Another partition file. Do not select this!
