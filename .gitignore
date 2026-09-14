@@ -1,6 +1,9 @@
 # output from building
 result
 
-# output of nixos-generate-config
-/hardware-configuration.nix
-/configuration.nix
+# act local artifact store
+.act-artifacts/
+
+# direnv
+.direnv/
+.envrc
