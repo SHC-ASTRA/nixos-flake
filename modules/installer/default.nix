@@ -1,10 +1,26 @@
 {
+  inputs,
   lib,
   pkgs,
   modulesPath,
   ...
 }:
 let
+  # flake source to be copied into the ISO
+  astraSrc = inputs.self.outPath;
+
+  # revision the source came from
+  astraRef =
+    if inputs.self ? rev then
+      # if the source is clean, we can just use the revision
+      inputs.self.rev
+    else if inputs.self ? dirtyRev then
+      # if the source is not clean, we have to remove the -dirty suffix
+      lib.removeSuffix "-dirty" inputs.self.dirtyRev
+    else
+      # if there is no rev attribute (not a git repo for whatever reason, use main
+      "main";
+
   astra-install = pkgs.writeShellApplication {
     name = "astra-install";
     runtimeInputs = with pkgs; [
@@ -13,7 +29,10 @@ let
       nixos-install-tools
       git
     ];
-    text = builtins.readFile ./astra-install.sh;
+    # substitute in the source and ref
+    text = builtins.replaceStrings [ "@astraSrc@" "@astraRef@" ] [ astraSrc astraRef ] (
+      builtins.readFile ./astra-install.sh
+    );
   };
 in
 {

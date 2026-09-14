@@ -109,6 +109,18 @@ You will be asked to:
 The installer partitions the disk with the ASTRA layout, mounts it, and runs
 `nixos-install` for the chosen host. After it finishes, reboot when prompted.
 
+> [!NOTE]
+> You need an internet connection to run the install script so that it can fetch nixpkgs
+> and packages.
+
+The ISO contians a copy of the flake source it was built from, and installs from
+that copy by default. You can override this default with `--flake` and `--git-ref`:
+
+```bash
+# install from the tip of main instead
+astra-install --flake github:SHC-ASTRA/nixos-flake --git-ref main
+```
+
 You'll also need to rekey the agenix secrets. Instructions for doing so can be
 found in [`modules/nixos/agenix/README.md`](./modules/nixos/agenix/README.md).
 
