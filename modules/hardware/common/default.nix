@@ -1,10 +1,18 @@
-{ lib, modulesPath, ... }:
+{
+  lib,
+  modulesPath,
+  pkgs,
+  ...
+}:
 {
   imports = [
     (modulesPath + "/installer/scan/not-detected.nix")
   ];
 
-  boot.initrd.availableKernelModules = [
+  # storage, input, and VM controllers found on our x86 boxes. these don't work on the
+  # jetson, but jetpack-nixos configures Tegra equivalents (nvme, xhci-tegra, ...) onits
+  # own
+  boot.initrd.availableKernelModules = lib.mkIf pkgs.stdenv.hostPlatform.isx86_64 [
     "xhci_pci"
     "thunderbolt"
     "ahci"

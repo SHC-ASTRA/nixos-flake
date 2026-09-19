@@ -1,12 +1,13 @@
-{ inputs, ... }:
 {
   imports = [
     ../common
-    ../common/cpu-intel.nix
     ../../disko
-    inputs.hardware.nixosModules.common-gpu-nvidia-nonprime
+    ./jetpack.nix
   ];
 
   networking.hostName = "clucky";
   astra.role.rover.enable = true;
+
+  # Enable GPU support - needed even for CUDA and containers
+  hardware.graphics.enable = true;
 }

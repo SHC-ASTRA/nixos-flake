@@ -48,6 +48,10 @@
       vimAlias = true;
       vimdiffAlias = true;
 
+      # coc plugins use node, so we don't need these
+      withRuby = false;
+      withPython3 = false;
+
       extraPackages = [ pkgs.nil ];
 
       plugins = with pkgs.vimPlugins; [
@@ -83,12 +87,12 @@
       let
         mkHostBlocks = name: cfg: {
           "${name}" = {
-            hostname = cfg.ip;
-            user = "astra";
+            HostName = cfg.ip;
+            User = "astra";
           };
           "${name}.local" = {
-            hostname = "${name}.local";
-            user = "astra";
+            HostName = "${name}.local";
+            User = "astra";
           };
         };
 
@@ -104,15 +108,15 @@
           PreferredAuthentications publickey,password
           IdentityFile /home/astra/.ssh/id_ed25519
         '';
-        matchBlocks = {
+        settings = {
           "*" = {
-            addKeysToAgent = "yes";
-            forwardAgent = true; # useful for ssh-in-ssh
-            compression = true;
+            AddKeysToAgent = "yes";
+            ForwardAgent = true; # useful for ssh-in-ssh
+            Compression = true;
           };
           "git@github.com" = {
-            hostname = "github.com";
-            user = "git";
+            HostName = "github.com";
+            User = "git";
           };
         }
         // hostBlocks;

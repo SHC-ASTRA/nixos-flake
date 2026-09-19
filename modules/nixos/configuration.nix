@@ -293,7 +293,7 @@
         with pkgs;
         [
           # Network
-          xorg.xauth # required for x forwarding to configure security
+          xauth # required for x forwarding to configure security
 
           # System
           gh
@@ -321,11 +321,11 @@
           gnumake
           python312Packages.pyserial # talk to serial devices in python
         ]
-        ++ (with inputs.basestation-cameras.packages.${pkgs.system}; [
+        ++ (with inputs.basestation-cameras.packages.${pkgs.stdenv.hostPlatform.system}; [
           cameracli # cli to list connected cameras
         ])
         ++ [
-          inputs.agenix.packages.${pkgs.system}.default # encryption for nix configurations
+          inputs.agenix.packages.${pkgs.stdenv.hostPlatform.system}.default # encryption for nix configurations
         ];
     };
 

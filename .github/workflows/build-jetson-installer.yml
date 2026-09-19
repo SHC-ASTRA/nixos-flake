@@ -1,0 +1,88 @@
+# Builds the aarch64 installer ISO for clucky's Jetson.
+#
+# This is disabled on purpose because it would absolutely anhilate our budget of minutes.
+#
+# Why it is off:
+#   - The Tegra kernel (linux-5.15.x, nvidia-oot, l4t-devicetree) isn't in any binary
+#     cache, so it compiles from source on every run. As of writing the ISO needs
+#     ~366 derivations built on top of ~3.4 GiB of unpacked store.
+#   - `ubuntu-24.04-arm` is free on public repos but gives 4 vCPU / 16 GB RAM and only
+#     14 GB of disk. That probably won't cut it.
+#   - We don't strictly need it because you can bootstrap the ASTRA flake from a regular
+#     NixOS installer.
+#
+#
+# To turn it on, pick whichever applies:
+#   - Self-hosted aarch64 runners: change `runs-on` to your label and add the triggers
+#     you want under `on:` (probably copy build-installer.yml).
+#   - Hydra: delete this file and the other build workflow. Hydra can output ISOs.
+#   - GitHub's hosted arm runners anyway: you'll probably have to pay for runners with
+#     more storage, so talk to the PL
+
+name: Build Jetson installer ISO
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    name: Build astra-installer-arm64.iso
+    runs-on: ubuntu-24.04-arm
+    steps:
+      - uses: actions/checkout@v4
+
+      # the arm64 runner image includes less preinstalled stuff than the x86 one, so
+      # there is less to reclaim here. paths that do not exist are ignored.
+      - name: Free disk space
+        run: |
+          sudo rm -rf /usr/share/dotnet /usr/local/lib/android /opt/ghc \
+            /opt/hostedtoolcache/CodeQL /usr/local/share/boost
+          sudo docker image prune --all --force || true
+          df -h
+
+      - name: Install Nix
+        uses: DeterminateSystems/nix-installer-action@main
+        with:
+          extra-conf: |
+            accept-flake-config = true
+            extra-substituters = https://ros.cachix.org https://attic.iid.ciirc.cvut.cz/ros
+            extra-trusted-public-keys = ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo= ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q=
+
+      # a separate cache key from build-installer.yml. the two architectures don't share any store paths
+      - uses: nix-community/cache-nix-action@v7
+        with:
+          primary-key: nix-${{ runner.os }}-${{ runner.arch }}-${{ hashFiles('**/flake.lock') }}
+          restore-prefixes-first-match: nix-${{ runner.os }}-${{ runner.arch }}-
+          # the Tegra kernel and its modules alone explode (anduril reference) the 2G the x86 job uses
+          gc-max-store-size-linux: 6G
+          purge: true
+          purge-prefixes: nix-${{ runner.os }}-${{ runner.arch }}-
+          purge-created: 0
+          purge-last-accessed: 86400
+          purge-primary-key: never
+
+      - name: Build installer
+        run: nix build .#packages.aarch64-linux.installer --print-build-logs
+
+      - name: Resolve ISO path
+        id: iso
+        run: |
+          iso=$(readlink -f result/iso/*.iso)
+          echo "path=$iso" >> "$GITHUB_OUTPUT"
+          echo "name=$(basename "$iso")" >> "$GITHUB_OUTPUT"
+          ls -lh "$iso"
+
+      - name: Upload ISO artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ steps.iso.outputs.name }}
+          path: ${{ steps.iso.outputs.path }}
+          if-no-files-found: error
+          retention-days: 30
+
+      - name: Attach ISO to release
+        if: ${{ !env.ACT && startsWith(github.ref, 'refs/tags/v') }}
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ steps.iso.outputs.path }}
+          fail_on_unmatched_files: true

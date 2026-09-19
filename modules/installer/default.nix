@@ -29,10 +29,12 @@ let
       nixos-install-tools
       git
     ];
-    # substitute in the source and ref
-    text = builtins.replaceStrings [ "@astraSrc@" "@astraRef@" ] [ astraSrc astraRef ] (
-      builtins.readFile ./astra-install.sh
-    );
+    # substitute in the source, the ref, and the architecture of this ISO
+    text =
+      builtins.replaceStrings
+        [ "@astraSrc@" "@astraRef@" "@astraSystem@" ]
+        [ astraSrc astraRef pkgs.stdenv.hostPlatform.system ]
+        (builtins.readFile ./astra-install.sh);
   };
 in
 {
@@ -41,7 +43,10 @@ in
     ../nixos/wifi.nix
   ];
 
-  image.baseName = lib.mkForce "astra-installer";
+  image.baseName = lib.mkForce "astra-installer-${pkgs.stdenv.hostPlatform.linuxArch}";
+
+  # every host but clucky is x86. `modules/installer/jetson.nix` overrides this.
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   # useful tools to have on a recovery / reinstall ISO
   environment.systemPackages = with pkgs; [

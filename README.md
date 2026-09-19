@@ -11,6 +11,8 @@ Testbed and then ship to Clucky without having to worry if some package or
 setting might be missing from one of them, and to ensure the experience between
 the Steam Deck and the Panda in the Base Station chassis are the same.
 
+Testbed and Clucky both use the `rover` role but have different hardware. Testbed is an Intel NUC with an RTX 3050 in it, while Clucky is a Jetson Orin. Anything that depends on the GPU, on CUDA, or on the kernel may behave differently between them, so test those on Clucky itself.
+
 ## Contents
 
 - [Shared NixOS config `./modules/nixos/`](./modules/nixos/)
@@ -81,11 +83,18 @@ sudo nixos-rebuild boot
 > The installer erases the selected disk. Only run it on a system where this
 > is okay.
 
+> [!NOTE]
+> You cannot use the artifact from GitHub Actions to install to the Jetson.
+
 First, either download the latest ISO from the [actions page](https://github.com/SHC-ASTRA/nixos-flake/actions?query=workflow%3A%22Build+installer+ISO%22+is%3Asuccess+branch%3Amain)
 or build it with the following command:
 
 ```bash
+# for antenna, deck, panda, and testbed
 nix build .#installer
+
+# for clucky. needs aarch64 (qemu is a good option)
+nix build .#packages.aarch64-linux.installer
 ```
 
 The image will end up at `./result/iso/astra-installer-*.iso` after you build it.
@@ -155,13 +164,33 @@ but not persist it across reboots.
 
 The hosts are as follows:
 
-| Host      | Machine                                                        |
-| --------- | -------------------------------------------------------------- |
-| `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna. |
-| `clucky`  | The Intel NUC installed within the main rover.                 |
-| `deck`    | The Valve Steam Deck used with basestation.                    |
-| `panda`   | The Latte Panda Delta 3 installed within basestation.          |
-| `testbed` | The Intel NUC installed within the testing rover.              |
+| Host      | Machine                                                             | Platform        |
+| --------- | ------------------------------------------------------------------- | --------------- |
+| `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna.      | `x86_64-linux`  |
+| `clucky`  | The NVIDIA Jetson Orin installed within the main rover.             | `aarch64-linux` |
+| `deck`    | The Valve Steam Deck used with basestation.                         | `x86_64-linux`  |
+| `panda`   | The Latte Panda Delta 3 installed within basestation.               | `x86_64-linux`  |
+| `testbed` | The Intel NUC installed within the testing rover.                   | `x86_64-linux`  |
+
+Clucky runs on an Orin, so it needs its own installer ISO and a firmware flash before
+that ISO will boot. See [Clucky and the Jetson](#clucky-and-the-jetson).
+
+### Clucky and the Jetson
+
+> [!CAUTION]
+> Read [jetpack-nixos' README](https://github.com/anduril/jetpack-nixos#readme) before messing with the Jetson's NixOS installation! It is the authoritative documentation for firmware flashing, capsule updates, JetPack version pinning, and the quirks of graphical output on Orin. We intentionally do not copy it because you should read up on how the underlying tool works before messing with it. Anduril's documentation is quite good and it should only take you about 30 minutes to get a handle on it.
+
+Clucky is an NVIDIA Jetson Orin Nano Super Developer Kit. The Tegra kernel, the L4T userspace (CUDA, hardware video, the Argus camera stack), and the UEFI firmware all come from [jetpack-nixos](https://github.com/anduril/jetpack-nixos), via the `jetpack` flake input. Fortunately, this doesn't change how we have to write the flake too much due to Nix's fantastic abstraction.
+
+The two things worth knowing that are specific to us:
+
+**Installing.** Boards bought recently already ship with UEFI firmware, so clucky is installed the same way as every other host: write `astra-installer-arm64.iso` to a USB drive, press `ESC` during boot, pick the USB device in the Boot Manager, and run `astra-install`. Graphical console output is unreliable on Orin, so reach for the serial console if something goes wrong. If the board turns out to be old enough to have no UEFI at all, `nix build .#flash-clucky` produces the flashing script for it. Please follow jetpack-nixos' instructions for how to run it.
+
+**GPU access in containers** goes through [CDI](https://github.com/cncf-tags/container-device-interface) rather than `--runtime=nvidia`. There is no Tegra equivalent of the desktop runtime shim, so pass the device explicitly:
+
+```bash
+docker run --device=nvidia.com/gpu=all ...
+```
 
 ### Block Device Files
 
