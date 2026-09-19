@@ -11,6 +11,11 @@
     # Hardware-specific configuration, especially for NVIDIA drivers
     hardware.url = "github:nixos/nixos-hardware";
 
+    # Jetson-specific
+    jetpack = {
+      url = "github:anduril/jetpack-nixos/master";
+      inputs.nixpkgs.follows = "nixpkgs";
+    };
     # Declarative drive partitioning
     disko = {
       url = "github:nix-community/disko";
@@ -19,7 +24,7 @@
 
     # Manage user-level configurations
     home-manager = {
-      url = "github:nix-community/home-manager/release-25.11";
+      url = "github:nix-community/home-manager/release-26.05";
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
@@ -62,6 +67,7 @@
 
       baseModules = [
         inputs.nix-ros-overlay.nixosModules.default
+        { nixpkgs.overlays = [ inputs.nix-ros-overlay.overlays.default ]; }
         inputs.agenix.nixosModules.default
         inputs.vscode-server.nixosModules.default
         inputs.disko.nixosModules.disko
@@ -82,6 +88,14 @@
       nixosConfigurations = {
         antenna = mkSystem ./modules/hardware/antenna;
         clucky = mkSystem ./modules/hardware/clucky;
+        clucky-jetson = nixpkgs.lib.nixosSystem {
+          system = "aarch64-linux";
+          specialArgs = { inherit inputs; };
+          modules = baseModules ++ [
+            ./modules/hardware/clucky-jetson
+            inputs.jetpack.nixosModules.default
+          ];
+        };
         deck = mkSystem ./modules/hardware/deck;
         panda = mkSystem ./modules/hardware/panda;
         testbed = mkSystem ./modules/hardware/testbed;

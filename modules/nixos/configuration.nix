@@ -169,7 +169,7 @@
       };
 
       # avahi covers name resolution for us, so turn off resolved's LLMNR to stop it listening on 5355
-      resolved.llmnr = "false";
+      resolved.settings.Resolve.LLMNR = "false";
 
       # lets devices be discovered via <hostname>.local. useful when not plugged in over ethernet.
       avahi = {
