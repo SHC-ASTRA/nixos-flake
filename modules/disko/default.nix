@@ -40,6 +40,14 @@
               "-L"
               "ASTRAROOT"
               "-f"
+              # the Jetson runs a 5.15 Tegra kernel, but mkfs.btrfs turns on
+              #   block-group-tree by default as of btrfs-progs 6.19 and that feature
+              #   needs kernel 6.1+. without this the installer formats a filesystem it
+              #   cannot mount ("cannot mount read-write because of unsupported optional
+              #   features (0x8)"). bgt only speeds up mount time, so it's not a big deal
+              #   to turn it off everywhere (and keep the filesystems identical).
+              "-O"
+              "^block-group-tree"
             ];
             subvolumes = {
               "@" = {
