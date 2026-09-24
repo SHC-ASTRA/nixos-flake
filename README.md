@@ -182,9 +182,11 @@ that ISO will boot. See [Clucky and the Jetson](#clucky-and-the-jetson).
 
 Clucky is an NVIDIA Jetson Orin Nano Super Developer Kit. The Tegra kernel, the L4T userspace (CUDA, hardware video, the Argus camera stack), and the UEFI firmware all come from [jetpack-nixos](https://github.com/anduril/jetpack-nixos), via the `jetpack` flake input. Fortunately, this doesn't change how we have to write the flake too much due to Nix's fantastic abstraction.
 
-The two things worth knowing that are specific to us:
+The three things worth knowing that are specific to us:
 
 **Installing.** Boards bought recently already ship with UEFI firmware, so clucky is installed the same way as every other host: write `astra-installer-arm64.iso` to a USB drive, press `ESC` during boot, pick the USB device in the Boot Manager, and run `astra-install`. Graphical console output is unreliable on Orin, so reach for the serial console if something goes wrong. If the board turns out to be old enough to have no UEFI at all, `nix build .#flash-clucky` produces the flashing script for it. Please follow jetpack-nixos' instructions for how to run it.
+
+**OpenCV is contained in the ISO.** `ros-humble-cv-bridge` depends on two builds of OpenCV 4.13, both of which are compiled with CUDA for `sm_87` for the specific Jetson we have. Because they are not in any binary cache I could find, and the Jetson is not powerful enough to complete the build on its own, the ISO is designed to build it on your system instead of on the Jetson.
 
 **GPU access in containers** goes through [CDI](https://github.com/cncf-tags/container-device-interface) rather than `--runtime=nvidia`. There is no Tegra equivalent of the desktop runtime shim, so pass the device explicitly:
 

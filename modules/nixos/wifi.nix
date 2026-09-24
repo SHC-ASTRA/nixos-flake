@@ -35,9 +35,10 @@
         "Student5" = "Go Chargers!";
         "Staff5" = "Where is the coffee?";
         "Faculty5" = "You will be tested";
+        "Teasdale Jewel" = "Tea$Jewel";
       };
       writePsk = ssid: passphrase: ''
-        install -m 0600 /dev/null /var/lib/iwd/${ssid}.psk
+        install -m 0600 /dev/null '/var/lib/iwd/${ssid}.psk'
         cat > /var/lib/iwd/${ssid}.psk <<'EOF'
         [Security]
         Passphrase=${passphrase}

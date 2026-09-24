@@ -6,6 +6,8 @@
 #   - The Tegra kernel (linux-5.15.x, nvidia-oot, l4t-devicetree) isn't in any binary
 #     cache, so it compiles from source on every run. As of writing the ISO needs
 #     ~366 derivations built on top of ~3.4 GiB of unpacked store.
+#   - The ISO also contains prebuilt CUDA OpenCV for clucky (see modules/installer/jetson.nix),
+#     which is two more source builds and several more GiB of store on top of that.
 #   - `ubuntu-24.04-arm` is free on public repos but gives 4 vCPU / 16 GB RAM and only
 #     14 GB of disk. That probably won't cut it.
 #   - We don't strictly need it because you can bootstrap the ASTRA flake from a regular
