@@ -39,7 +39,7 @@
       };
       writePsk = ssid: passphrase: ''
         install -m 0600 /dev/null '/var/lib/iwd/${ssid}.psk'
-        cat > /var/lib/iwd/${ssid}.psk <<'EOF'
+        cat > '/var/lib/iwd/${ssid}.psk' <<'EOF'
         [Security]
         Passphrase=${passphrase}
         EOF
