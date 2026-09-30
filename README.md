@@ -192,3 +192,31 @@ Here are some example block device files names:
   `sudo fdisk -l`.
 - `/dev/sda` - Another candidate for either of the NUCs' SSDs.
 - `/dev/sdb2` - Another partition file. Do not select this!
+
+## WTF, Nix?
+
+Things that may help you when you're wondering WTF is going on.
+
+### How do I add new packages?
+
+Add programs to `modules/nixos/configuration.nix` under `environment.systemPackages`. If it's a ROS2 package, add it under `config.astra.extraRos2Packages`.
+
+### How does `modules/hardware/` work?
+
+Take a look at the `mkSystem` function in `flake.nix`. It takes `hardwareModule` as an input and spits out the result of calling `nixpkgs.lib.nixosSystem` with a couple of pre-defined inputs. Hardware modules define device-specific functionality like drivers, Wi-Fi devices, and which role and hostname the device should have. `modules/hardware/` contains those hardware modules that `mkSystem` expects.
+
+### How does `modules/nixos/roles/` work?
+
+This directory contains configuration that is only enabled for certain sets of devices. For example, `clucky` and `testbed` both need rover-ros2 autostart, but do not need a graphical environment, so they both enable the `rover` role. They are only added to a given device's configuration if `config.astra.role.rover.enable` is true.
+
+
+### How do see what the autostart programs are doing?
+
+You can use `systemctl status --user anchor` to quickly see the status of the anchor systemD service, and `journalctl -xefu anchor --user` to see the full logs.
+
+### Why is this file read only? Why is this file a symlink to `/nix/store/`?
+
+NixOS and Home Manager will both make files in the [Nix Store](https://zero-to-nix.com/concepts/nix-store/). The Store is an immutable part of your filesystem that stores all of the packages and configuration files that are declared in this configuration. If you want to be able to edit one of these, search for the relevant configuration option in this repository.
+
+The reason these files are immutable is so that they cannot accumulate unwanted [state](https://en.wikipedia.org/wiki/State_(computer_science)), reducing the possibility that something will work on one machine but not on another. The entire purpose of using NixOS is to prevent random changes that were not explicitly put into the configuration.
+
