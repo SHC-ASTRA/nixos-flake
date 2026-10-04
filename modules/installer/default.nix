@@ -3,15 +3,11 @@
   lib,
   pkgs,
   modulesPath,
-  hosts,
   ...
 }:
 let
   # flake source to be copied into the ISO
   astraSrc = inputs.self.outPath;
-
-  # space-separated host names for the installer menu
-  astraHosts = builtins.concatStringsSep " " (builtins.attrNames hosts);
 
   # revision the source came from
   astraRef =
@@ -33,16 +29,10 @@ let
       nixos-install-tools
       git
     ];
-    # substitute in the source, ref, and host menu
-    text =
-      builtins.replaceStrings
-        [ "@astraSrc@" "@astraRef@" "@astraHosts@" ]
-        [
-          astraSrc
-          astraRef
-          astraHosts
-        ]
-        (builtins.readFile ./astra-install.sh);
+    # substitute in the source and ref
+    text = builtins.replaceStrings [ "@astraSrc@" "@astraRef@" ] [ astraSrc astraRef ] (
+      builtins.readFile ./astra-install.sh
+    );
   };
 in
 {

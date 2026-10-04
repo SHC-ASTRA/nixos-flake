@@ -24,9 +24,4 @@
   boot.extraModulePackages = [ ];
 
   nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
-
-  hardware.graphics.enable = true;
-
-  # default so it doesn't explode if you import disko config
-  _module.args.device = lib.mkDefault "/dev/disk/by-id/unset-see-modules-hardware-common";
 }
