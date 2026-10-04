@@ -2,6 +2,14 @@
 set -euo pipefail
 
 HOSTS=(antenna clucky deck panda testbed)
+# the platform each host runs, in the same order as HOSTS. clucky is a Jetson AGX Orin;
+#   everything else is on x86.
+HOST_SYSTEMS=(x86_64-linux aarch64-linux x86_64-linux x86_64-linux x86_64-linux)
+
+# the platform of the ISO this script is running from, substituted in by
+# modules/installer/default.nix. nixos-install builds the system on the machine running
+# it, so an ISO can only provision hosts that share its architecture.
+ISO_SYSTEM="@astraSystem@"
 
 # the flake source and revision this ISO was built from, substituted in by
 # modules/installer/default.nix. installing from the copy on the ISO rather than from
@@ -55,6 +63,7 @@ done
 
 echo "ASTRA installer"
 echo "  built from: $BUILD_REF"
+echo "  platform: $ISO_SYSTEM"
 echo "  flake:   $FLAKE_REF"
 echo "  git url: $GIT_URL"
 echo "  git ref: $GIT_REF"
@@ -71,7 +80,14 @@ if ! [[ $host_index =~ ^[0-9]+$ ]] || ((host_index < 1)) || ((host_index > ${#HO
   exit 1
 fi
 HOST="${HOSTS[$((host_index - 1))]}"
+HOST_SYSTEM="${HOST_SYSTEMS[$((host_index - 1))]}"
 echo "selected host: $HOST"
+
+if [[ $HOST_SYSTEM != "$ISO_SYSTEM" ]]; then
+  echo "$HOST is $HOST_SYSTEM but this ISO is $ISO_SYSTEM." >&2
+  echo "boot the $HOST_SYSTEM installer instead (nix build .#packages.$HOST_SYSTEM.installer)." >&2
+  exit 1
+fi
 echo
 
 echo "available devices:"

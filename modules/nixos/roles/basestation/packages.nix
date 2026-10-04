@@ -33,7 +33,7 @@
         # Support the Video Audio (Hardware) Acceleration API
         gst_all_1.gst-vaapi
       ]
-      ++ (with inputs.basestation-cameras.packages.${pkgs.system}; [
+      ++ (with inputs.basestation-cameras.packages.${pkgs.stdenv.hostPlatform.system}; [
         default
         launch-cameras
       ]);
