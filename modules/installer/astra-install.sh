@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-HOSTS=(antenna clucky deck panda testbed)
+HOSTS=(@astraHosts@)
 
 # the flake source and revision this ISO was built from, substituted in by
 # modules/installer/default.nix. installing from the copy on the ISO rather than from

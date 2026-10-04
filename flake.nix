@@ -59,6 +59,16 @@
     }:
     let
       system = "x86_64-linux";
+      lib = nixpkgs.lib;
+
+      # single source of truth for astra hosts & ips
+      hosts = {
+        antenna.ip = "192.168.1.33";
+        clucky.ip = "192.168.1.69";
+        deck.ip = "192.168.1.31";
+        panda.ip = "192.168.1.32";
+        testbed.ip = "192.168.1.70";
+      };
 
       baseModules = [
         inputs.nix-ros-overlay.nixosModules.default
@@ -74,23 +84,20 @@
         hardwareModule:
         nixpkgs.lib.nixosSystem {
           inherit system;
-          specialArgs = { inherit inputs; };
+          specialArgs = { inherit inputs hosts; };
           modules = baseModules ++ [ hardwareModule ];
         };
     in
     {
-      nixosConfigurations = {
-        antenna = mkSystem ./modules/hardware/antenna;
-        clucky = mkSystem ./modules/hardware/clucky;
-        deck = mkSystem ./modules/hardware/deck;
-        panda = mkSystem ./modules/hardware/panda;
-        testbed = mkSystem ./modules/hardware/testbed;
-        installer = nixpkgs.lib.nixosSystem {
-          inherit system;
-          specialArgs = { inherit inputs; };
-          modules = [ ./modules/installer ];
+      nixosConfigurations =
+        (lib.genAttrs (builtins.attrNames hosts) (name: mkSystem (./modules/hardware + "/${name}")))
+        // {
+          installer = nixpkgs.lib.nixosSystem {
+            inherit system;
+            specialArgs = { inherit inputs hosts; };
+            modules = [ ./modules/installer ];
+          };
         };
-      };
 
       packages.${system}.installer = self.nixosConfigurations.installer.config.system.build.isoImage;
 
