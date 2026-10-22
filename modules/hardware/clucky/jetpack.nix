@@ -23,4 +23,10 @@
     super = true;
     carrierBoard = "devkit";
   };
+
+  # serial login
+  systemd.services."serial-getty@ttyTCU0" = {
+    overrideStrategy = "asDropin";
+    wantedBy = [ "getty.target" ];
+  };
 }
