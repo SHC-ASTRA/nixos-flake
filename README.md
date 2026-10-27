@@ -11,6 +11,8 @@ Testbed and then ship to Clucky without having to worry if some package or
 setting might be missing from one of them, and to ensure the experience between
 the Steam Deck and the Panda in the Base Station chassis are the same.
 
+Testbed and Clucky both use the `rover` role but have different hardware. Testbed is an Intel NUC with an RTX 3050 in it, while Clucky is a Jetson Orin. Anything that depends on the GPU, on CUDA, or on the kernel may behave differently between them, so test those on Clucky itself.
+
 ## Contents
 
 - [Shared NixOS config `./modules/nixos/`](./modules/nixos/)
@@ -81,12 +83,24 @@ sudo nixos-rebuild boot
 > The installer erases the selected disk. Only run it on a system where this
 > is okay.
 
+> [!NOTE]
+> You cannot use the artifact from GitHub Actions to install to the Jetson.
+
 First, either download the latest ISO from the [actions page](https://github.com/SHC-ASTRA/nixos-flake/actions?query=workflow%3A%22Build+installer+ISO%22+is%3Asuccess+branch%3Amain)
 or build it with the following command:
 
 ```bash
+# for antenna, deck, panda, and testbed
 nix build .#installer
+
+# for clucky. needs aarch64 (qemu is a good option)
+nix build .#packages.aarch64-linux.installer
 ```
+
+Building the aarch64 ISO on an x86 machine works through binfmt/qemu, but every
+aarch64 compile runs emulated. Make sure the [binary cache](#binary-cache) is
+reachable before you start, or you will sit through the Tegra kernel and two CUDA
+builds of OpenCV.
 
 The image will end up at `./result/iso/astra-installer-*.iso` after you build it.
 
@@ -155,13 +169,64 @@ but not persist it across reboots.
 
 The hosts are as follows:
 
-| Host      | Machine                                                        |
-| --------- | -------------------------------------------------------------- |
-| `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna. |
-| `clucky`  | The Intel NUC installed within the main rover.                 |
-| `deck`    | The Valve Steam Deck used with basestation.                    |
-| `panda`   | The Latte Panda Delta 3 installed within basestation.          |
-| `testbed` | The Intel NUC installed within the testing rover.              |
+| Host      | Machine                                                             | Platform        |
+| --------- | ------------------------------------------------------------------- | --------------- |
+| `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna.      | `x86_64-linux`  |
+| `clucky`  | The NVIDIA Jetson Orin installed within the main rover.             | `aarch64-linux` |
+| `deck`    | The Valve Steam Deck used with basestation.                         | `x86_64-linux`  |
+| `panda`   | The Latte Panda Delta 3 installed within basestation.               | `x86_64-linux`  |
+| `testbed` | The Intel NUC installed within the testing rover.                   | `x86_64-linux`  |
+
+Clucky runs on an Orin, so it needs its own installer ISO and a firmware flash before
+that ISO will boot. See [Clucky and the Jetson](#clucky-and-the-jetson).
+
+### Clucky and the Jetson
+
+> [!CAUTION]
+> Read [jetpack-nixos' README](https://github.com/anduril/jetpack-nixos#readme) before messing with the Jetson's NixOS installation! It is the authoritative documentation for firmware flashing, capsule updates, JetPack version pinning, and the quirks of graphical output on Orin. We intentionally do not copy it because you should read up on how the underlying tool works before messing with it. Anduril's documentation is quite good and it should only take you about 30 minutes to get a handle on it.
+
+Clucky is an NVIDIA Jetson Orin Nano Super Developer Kit. The Tegra kernel, the L4T userspace (CUDA, hardware video, the Argus camera stack), and the UEFI firmware all come from [jetpack-nixos](https://github.com/anduril/jetpack-nixos), via the `jetpack` flake input. Fortunately, this doesn't change how we have to write the flake too much due to Nix's fantastic abstraction.
+
+The two things worth knowing that are specific to us:
+
+**OpenCV is contained in the ISO.** `ros-humble-cv-bridge` depends on two builds of OpenCV 4.13, both of which are compiled with CUDA for `sm_87` for the specific Jetson we have. Because they are in no public binary cache, and the Jetson is not powerful enough to complete the build on its own, the ISO is designed to build it on your system instead of on the Jetson. Push them to our [binary cache](#binary-cache) once you have built them and nobody has to do it again.
+
+**GPU access in containers** goes through [CDI](https://github.com/cncf-tags/container-device-interface) rather than `--runtime=nvidia`. There is no Tegra equivalent of the desktop runtime shim, so pass the device explicitly:
+
+```bash
+docker run --device=nvidia.com/gpu=all ...
+```
+
+### Binary Cache
+
+Most of what the Jetson needs isn't in any public cache: the Tegra kernel, the L4T out-of-tree modules, the device tree, and the two CUDA builds of OpenCV. jetpack-nixos does not publish one. Without a cache of our own, every person and every machine compiles all of it from source, and on an x86 laptop that happens under aarch64 emulation (very slow).
+
+So we have one, at `https://cache.ryleu.me/astra`. It is already configured in three places, and you should not need to do anything to *read* from it:
+
+- `flake.nix`'s `nixConfig`, for anyone building this flake directly. The first time you build you will be asked to accept the flake config; say yes (or pass `--accept-flake-config`).
+- `modules/nixos/substituters.nix`, which installed systems and the installer ISO both add into `nix.settings`.
+- the `extra-conf` blocks in `.github/workflows/`.
+
+Currently, adding files to the cache requires manual work:
+
+```bash
+# with a token that has push access
+nix run nixpkgs#attic-client -- login astra https://cache.ryleu.me <token>
+
+# after a build. `attic push` walks the closure, so this picks up the kernel,
+#   the L4T modules, and OpenCV along with the thing you actually built
+nix run nixpkgs#attic-client -- push astra:astra ./result
+```
+
+The most valuable thing to push is clucky's whole system closure, because that is what
+`nixos-install` and `nixos-rebuild` need:
+
+```bash
+nix build .#nixosConfigurations.clucky.config.system.build.toplevel
+nix run nixpkgs#attic-client -- push astra:astra ./result
+```
+
+CI pushes too, but only when stuff gets pushed to GitHub.
 
 ### Block Device Files
 
