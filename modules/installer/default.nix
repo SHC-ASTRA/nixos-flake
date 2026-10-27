@@ -41,6 +41,8 @@ in
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
     ../nixos/wifi.nix
+    # `nixos-install` builds the system on the machine running this ISO, so it needs these
+    ../nixos/substituters.nix
   ];
 
   image.baseName = lib.mkForce "astra-installer-${pkgs.stdenv.hostPlatform.linuxArch}";
@@ -69,14 +71,6 @@ in
     experimental-features = [
       "nix-command"
       "flakes"
-    ];
-    extra-substituters = [
-      "https://ros.cachix.org"
-      "https://attic.iid.ciirc.cvut.cz/ros"
-    ];
-    extra-trusted-public-keys = [
-      "ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo="
-      "ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q="
     ];
     trusted-users = [
       "root"

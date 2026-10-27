@@ -111,15 +111,7 @@
 
       # packages are different per arch, so we do not use forAllSystems
       packages = {
-        x86_64-linux = {
-          installer = self.nixosConfigurations.installer.config.system.build.isoImage;
-
-          # reflashes the Orin's UEFI firmware. recent boards have it already and shouldn't need this.
-          #   note: NVIDIA only builds the flashing tools for x86!
-          #   see jetpack-nixos' README before running it.
-          flash-clucky = self.nixosConfigurations.clucky.config.system.build.flashScript;
-        };
-
+        x86_64-linux.installer = self.nixosConfigurations.installer.config.system.build.isoImage;
         aarch64-linux.installer = self.nixosConfigurations.installer-jetson.config.system.build.isoImage;
       };
 
@@ -145,12 +137,15 @@
     };
 
   nixConfig = {
-    # Cache to pull ros packages from
+    # ASTRA machines get these from `modules/nixos/substituters.nix` instead, so keep both
+    #   in sync
     extra-substituters = [
+      "https://cache.ryleu.me/astra"
       "https://ros.cachix.org"
       "https://attic.iid.ciirc.cvut.cz/ros"
     ];
     extra-trusted-public-keys = [
+      "astra:d9bYlP7iR2odaZA2hYYuZRfaeN89lK+W1hiw6THibeQ="
       "ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo="
       "ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q="
     ];
