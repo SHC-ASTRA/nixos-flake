@@ -17,16 +17,6 @@ in
       portalPackage = pkgs-2605.xdg-desktop-portal-hyprland;
     };
 
-    hardware.graphics = {
-      package = pkgs-2605.mesa;
-      package32 = pkgs-2605.pkgsi686Linux.mesa;
-    };
-
-    services.greetd = {
-      enable = true;
-      settings.default_session.command = "${lib.getExe pkgs.tuigreet} --time --remember --cmd start-hyprland";
-    };
-
     environment.systemPackages = with pkgs; [
       rofi
       mako
@@ -43,6 +33,12 @@ in
     systemd.packages = [ pkgs.hyprpolkitagent ];
 
     home-manager.users.astra = {
+      programs.zsh.profileExtra = ''
+        if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+          exec start-hyprland
+        fi
+      '';
+
       xdg.configFile = {
         "hypr/hyprland.lua".source = ./hyprland.lua;
         "quickshell/bar".source = "${inputs.iggys-reasonable-shell}/bar";
