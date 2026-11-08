@@ -8,6 +8,9 @@
     # Main set of packages
     nixpkgs.follows = "nix-ros-overlay/nixpkgs";
 
+    # Newer packages for Hyprland
+    nixpkgs-2605.url = "github:NixOS/nixpkgs/nixos-26.05";
+
     # Hardware-specific configuration, especially for NVIDIA drivers
     hardware.url = "github:nixos/nixos-hardware";
 
