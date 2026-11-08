@@ -22,9 +22,9 @@ in
       package32 = pkgs-2605.pkgsi686Linux.mesa;
     };
 
-    services.displayManager.sddm = {
+    services.greetd = {
       enable = true;
-      wayland.enable = true;
+      settings.default_session.command = "${lib.getExe pkgs.tuigreet} --time --remember --cmd start-hyprland";
     };
 
     environment.systemPackages = with pkgs; [
@@ -42,9 +42,21 @@ in
 
     systemd.packages = [ pkgs.hyprpolkitagent ];
 
-    home-manager.users.astra.xdg.configFile = {
-      "hypr/hyprland.lua".source = ./hyprland.lua;
-      "quickshell/bar".source = "${inputs.iggys-reasonable-shell}/bar";
+    home-manager.users.astra = {
+      xdg.configFile = {
+        "hypr/hyprland.lua".source = ./hyprland.lua;
+        "quickshell/bar".source = "${inputs.iggys-reasonable-shell}/bar";
+      };
+
+      home.pointerCursor = {
+        enable = true;
+        hyprcursor.enable = true;
+        gtk.enable = true;
+        x11.enable = true;
+        package = pkgs.bibata-cursors;
+        name = "Bibata-Modern-Ice";
+        size = 24;
+      };
     };
   };
 }

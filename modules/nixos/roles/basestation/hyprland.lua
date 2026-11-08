@@ -207,6 +207,19 @@ hl.define_submap("screenshot", function()
     hl.bind("ESCAPE", hl.dsp.submap("reset"))
 end)
 
+-- workspaces on JKL;'
+hl.bind("SUPER + J", hl.dsp.focus({ workspace = 1 }))
+hl.bind("SUPER + K", hl.dsp.focus({ workspace = 2 }))
+hl.bind("SUPER + L", hl.dsp.focus({ workspace = 3 }))
+hl.bind("SUPER + SEMICOLON", hl.dsp.focus({ workspace = 4 }))
+hl.bind("SUPER + APOSTROPHE", hl.dsp.focus({ workspace = 5 }))
+
+hl.bind("SUPER + SHIFT + J", hl.dsp.window.move({ workspace = 1 }))
+hl.bind("SUPER + SHIFT + K", hl.dsp.window.move({ workspace = 2 }))
+hl.bind("SUPER + SHIFT + L", hl.dsp.window.move({ workspace = 3 }))
+hl.bind("SUPER + SHIFT + SEMICOLON", hl.dsp.window.move({ workspace = 4 }))
+hl.bind("SUPER + SHIFT + APOSTROPHE", hl.dsp.window.move({ workspace = 5 }))
+
 -- workspaces 1-10 on SUPER+[1-0], 11-20 on SUPER+ALT+[1-0]
 for n = 1, 10 do
     local key = n % 10
