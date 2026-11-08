@@ -8,7 +8,9 @@
 {
   config = lib.mkIf config.astra.role.basestation.enable {
     astra.extraRos2Packages = [ (p: [ p.rqt-graph ]) ];
-
+    
+    programs.steam.enable = true; # for the keyboard
+    
     environment.systemPackages =
       with pkgs;
       [

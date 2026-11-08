@@ -8,20 +8,10 @@
       };
     };
     services = {
-      displayManager.gdm = {
-        enable = true;
-        wayland = true;
-      };
-      desktopManager.gnome.enable = true;
+      displayManager.sddm.enable = true;
+      desktopManager.plasma6.enable = true;
       xserver = {
         enable = true;
-      };
-
-      gnome = {
-        core-apps.enable = true;
-        core-developer-tools.enable = false;
-        games.enable = false;
-        gnome-keyring.enable = true;
       };
     };
   };
