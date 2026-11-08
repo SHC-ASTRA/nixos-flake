@@ -5,6 +5,6 @@
     ../../disko
   ];
 
-  networking.hostName = "panda";
+  networking.hostName = "bs-nuc";
   astra.role.basestation.enable = true;
 }

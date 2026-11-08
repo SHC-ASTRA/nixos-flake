@@ -83,7 +83,7 @@
         antenna = mkSystem ./modules/hardware/antenna;
         clucky = mkSystem ./modules/hardware/clucky;
         deck = mkSystem ./modules/hardware/deck;
-        panda = mkSystem ./modules/hardware/panda;
+        bs-nuc = mkSystem ./modules/hardware/bs-nuc;
         testbed = mkSystem ./modules/hardware/testbed;
         installer = nixpkgs.lib.nixosSystem {
           inherit system;
