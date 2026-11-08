@@ -175,6 +175,22 @@
         "type": "github"
       }
     },
+    "iggys-reasonable-shell": {
+      "flake": false,
+      "locked": {
+        "lastModified": 1794171579,
+        "narHash": "sha256-pINUaF/sa9WgWSc4HWM48ipBhTO4eXetZzZufzrsyFc=",
+        "owner": "iggy-c",
+        "repo": "iggys-reasonable-shell",
+        "rev": "7d6714bebaa46b6da894572d4be34e50cc0f8d89",
+        "type": "github"
+      },
+      "original": {
+        "owner": "iggy-c",
+        "repo": "iggys-reasonable-shell",
+        "type": "github"
+      }
+    },
     "nix-ros-overlay": {
       "inputs": {
         "flake-utils": "flake-utils_2",
@@ -234,6 +250,7 @@
         "disko": "disko",
         "hardware": "hardware",
         "home-manager": "home-manager_2",
+        "iggys-reasonable-shell": "iggys-reasonable-shell",
         "nix-ros-overlay": "nix-ros-overlay",
         "nixpkgs": [
           "nix-ros-overlay",

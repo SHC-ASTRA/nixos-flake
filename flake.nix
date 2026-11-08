@@ -26,6 +26,12 @@
       inputs.nixpkgs.follows = "nixpkgs";
     };
 
+    # Quickshell bar for the basestation
+    iggys-reasonable-shell = {
+      url = "github:iggy-c/iggys-reasonable-shell";
+      flake = false;
+    };
+
     # Gstreamer cameras app
     basestation-cameras = {
       url = "github:SHC-ASTRA/basestation-cameras";

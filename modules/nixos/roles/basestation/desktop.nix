@@ -32,10 +32,19 @@ in
       mako
       pkgs-2605.hyprshot
       tesseract
+      pkgs-2605.quickshell
+    ];
+
+    fonts.packages = with pkgs; [
+      fira-code
+      nerd-fonts.symbols-only
     ];
 
     systemd.packages = [ pkgs.hyprpolkitagent ];
 
-    home-manager.users.astra.xdg.configFile."hypr/hyprland.lua".source = ./hyprland.lua;
+    home-manager.users.astra.xdg.configFile = {
+      "hypr/hyprland.lua".source = ./hyprland.lua;
+      "quickshell/bar".source = "${inputs.iggys-reasonable-shell}/bar";
+    };
   };
 }

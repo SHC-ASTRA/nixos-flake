@@ -235,6 +235,7 @@ hl.bind("XF86AudioMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SINK@ to
 hl.bind("XF86AudioMicMute", hl.dsp.exec_cmd("wpctl set-mute @DEFAULT_AUDIO_SOURCE@ toggle"), { locked = true })
 
 hl.on("hyprland.start", function()
+    hl.exec_cmd("qs -c bar")
     hl.exec_cmd("mako")
     hl.exec_cmd("systemctl --user start hyprpolkitagent")
 end)
