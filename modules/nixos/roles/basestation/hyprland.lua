@@ -108,6 +108,11 @@ hl.window_rule({
     no_focus = true,
 })
 
+-- basestation-qt: send each window to its own workspace
+hl.window_rule({ match = { class = "^astra-basestation$", title = "^Monitor 1$" }, workspace = "1" })
+hl.window_rule({ match = { class = "^astra-basestation$", title = "^Monitor 2$" }, workspace = "2" })
+hl.window_rule({ match = { class = "^astra-basestation$", title = "^Monitor 3$" }, workspace = "3" })
+
 -- keybinds
 -- See https://wiki.hypr.land/Configuring/Basics/Binds/ for more
 
