@@ -8,6 +8,9 @@
     # Main set of packages
     nixpkgs.follows = "nix-ros-overlay/nixpkgs";
 
+    # Newer packages for Hyprland
+    nixpkgs-2605.url = "github:NixOS/nixpkgs/nixos-26.05";
+
     # Hardware-specific configuration, especially for NVIDIA drivers
     hardware.url = "github:nixos/nixos-hardware";
 
@@ -21,6 +24,12 @@
     home-manager = {
       url = "github:nix-community/home-manager/release-25.11";
       inputs.nixpkgs.follows = "nixpkgs";
+    };
+
+    # Quickshell bar for the basestation
+    iggys-reasonable-shell = {
+      url = "github:iggy-c/iggys-reasonable-shell";
+      flake = false;
     };
 
     # Gstreamer cameras app
@@ -83,7 +92,7 @@
         antenna = mkSystem ./modules/hardware/antenna;
         clucky = mkSystem ./modules/hardware/clucky;
         deck = mkSystem ./modules/hardware/deck;
-        panda = mkSystem ./modules/hardware/panda;
+        bs-nuc = mkSystem ./modules/hardware/bs-nuc;
         testbed = mkSystem ./modules/hardware/testbed;
         installer = nixpkgs.lib.nixosSystem {
           inherit system;

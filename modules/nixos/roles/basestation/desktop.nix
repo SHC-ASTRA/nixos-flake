@@ -1,27 +1,56 @@
-{ config, lib, ... }:
+{
+  config,
+  lib,
+  pkgs,
+  inputs,
+  ...
+}:
+let
+  pkgs-2605 = inputs.nixpkgs-2605.legacyPackages.${pkgs.stdenv.hostPlatform.system};
+in
 {
   config = lib.mkIf config.astra.role.basestation.enable {
-    programs = {
-      hyprland = {
-        enable = true;
-        xwayland.enable = true;
-      };
+    programs.hyprland = {
+      enable = true;
+      xwayland.enable = true;
+      package = pkgs-2605.hyprland;
+      portalPackage = pkgs-2605.xdg-desktop-portal-hyprland;
     };
-    services = {
-      displayManager.gdm = {
-        enable = true;
-        wayland = true;
-      };
-      desktopManager.gnome.enable = true;
-      xserver = {
-        enable = true;
+
+    environment.systemPackages = with pkgs; [
+      rofi
+      mako
+      pkgs-2605.flameshot
+      pkgs-2605.quickshell
+    ];
+
+    fonts.packages = with pkgs; [
+      fira-code
+      nerd-fonts.symbols-only
+    ];
+
+    systemd.packages = [ pkgs.hyprpolkitagent ];
+
+    home-manager.users.astra = {
+      programs.zsh.profileExtra = ''
+        if [ -z "$WAYLAND_DISPLAY" ] && [ "$XDG_VTNR" = 1 ]; then
+          exec start-hyprland
+        fi
+      '';
+
+      xdg.configFile = {
+        "hypr/hyprland.lua".source = ./hyprland.lua;
+        "quickshell/bar".source = "${inputs.iggys-reasonable-shell}/bar";
       };
 
-      gnome = {
-        core-apps.enable = true;
-        core-developer-tools.enable = false;
-        games.enable = false;
-        gnome-keyring.enable = true;
+      home.pointerCursor = {
+        enable = true;
+        hyprcursor.enable = true;
+        gtk.enable = true;
+        x11.enable = true;
+        package = pkgs.bibata-cursors;
+        name = "Bibata-Modern-Ice";
+        size = 24;
       };
     };
   };

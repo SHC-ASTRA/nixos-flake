@@ -9,7 +9,7 @@ machines, without having to worry about accumulating state that might cause
 differences in the field. This gives us the ability to confidently test on
 Testbed and then ship to Clucky without having to worry if some package or
 setting might be missing from one of them, and to ensure the experience between
-the Steam Deck and the Panda in the Base Station chassis are the same.
+the Steam Deck and the NUC in the Base Station chassis are the same.
 
 ## Contents
 
@@ -20,7 +20,7 @@ the Steam Deck and the Panda in the Base Station chassis are the same.
   - [Tracking Antenna `./modules/hardware/antenna/`](./modules/hardware/antenna/)
   - [Clucky `./modules/hardware/clucky/`](./modules/hardware/clucky/)
   - [Steam Deck `./modules/hardware/deck/`](./modules/hardware/deck/)
-  - [Base Station Panda `./modules/hardware/panda/`](./modules/hardware/panda/)
+  - [Base Station NUC `./modules/hardware/bs-nuc/`](./modules/hardware/bs-nuc/)
   - [Testbed `./modules/hardware/testbed/`](./modules/hardware/testbed/)
 - [Home Manager config `./modules/home-manager/`](./modules/home-manager/)
 - [Disk partitioning `./modules/disko/`](./modules/disko/)
@@ -160,7 +160,7 @@ The hosts are as follows:
 | `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna. |
 | `clucky`  | The Intel NUC installed within the main rover.                 |
 | `deck`    | The Valve Steam Deck used with basestation.                    |
-| `panda`   | The Latte Panda Delta 3 installed within basestation.          |
+| `bs-nuc`   | The NUC installed within basestation.          |
 | `testbed` | The Intel NUC installed within the testing rover.              |
 
 ### Block Device Files
