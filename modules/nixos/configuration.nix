@@ -95,6 +95,8 @@
         "dialout" # allows serial
         "input" # allows access to Human Interface Devices (HID) like controllers
         "usb" # allows access to other USB devices
+        "video" # allow access to direct rendering management
+        "render" # allow access to vulkan & opengl
       ];
 
       # this is technically bad practice to publish, but everyone already knows this password anyways
