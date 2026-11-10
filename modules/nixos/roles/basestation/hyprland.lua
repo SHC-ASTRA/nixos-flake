@@ -70,7 +70,6 @@ hl.curve("emphasizedDecel", { type = "bezier", points = { { 0.05, 0.5 }, { 0.1, 
 hl.curve("standard", { type = "bezier", points = { { 0.2, 0 }, { 0, 1 } } })
 
 -- animations
-
 hl.animation({ leaf = "layersIn", enabled = true, speed = 1, bezier = "emphasizedDecel" })
 hl.animation({ leaf = "layersOut", enabled = true, speed = 1, bezier = "emphasizedAccel" })
 hl.animation({ leaf = "fadeLayers", enabled = true, speed = 1, bezier = "standard" })
@@ -121,6 +120,7 @@ hl.bind("SUPER + SPACE", hl.dsp.exec_cmd("rofi -modes \"drun,ssh,window\" -show 
 hl.bind("SUPER + E", hl.dsp.exec_cmd("nautilus"))
 hl.bind("SUPER + Q", hl.dsp.exec_cmd("kitten quick-access-terminal"))
 hl.bind("SUPER + SHIFT + ESCAPE", hl.dsp.exit())
+hl.bind("SUPER + P", hl.dsp.exec_cmd("flameshot gui"))
 
 hl.bind("SUPER + W", hl.dsp.window.close())
 hl.bind("SUPER + S", hl.dsp.workspace.toggle_special("S"))
@@ -134,9 +134,6 @@ hl.bind("SUPER + left", hl.dsp.focus({ direction = "left" }))
 hl.bind("SUPER + down", hl.dsp.focus({ direction = "down" }))
 hl.bind("SUPER + up", hl.dsp.focus({ direction = "up" }))
 hl.bind("SUPER + right", hl.dsp.focus({ direction = "right" }))
-
--- hl.bind("SUPER + mouse_up", hl.dsp.focus({ workspace = "-1" }))
--- hl.bind("SUPER + mouse_down", hl.dsp.focus({ workspace = "+1" }))
 
 hl.gesture({
     fingers = 3,
@@ -178,39 +175,6 @@ hl.gesture({
         end
     end,
 })
-
--- screenshot
-local cmd_base, cmd_arg, cmd_region
-hl.bind("SUPER + P", function()
-    cmd_base = "hyprshot -m "
-    cmd_arg = ""
-    cmd_region = ""
-    hl.dispatch(hl.dsp.submap("screenshot"))
-end)
-hl.define_submap("screenshot", function()
-
-    local function try_exec()
-        if cmd_arg ~= "" and cmd_region ~= "" then
-            hl.exec_cmd(cmd_base .. cmd_region .. " " .. cmd_arg)
-            hl.dispatch(hl.dsp.submap("reset"))
-        end
-    end
-
-    hl.bind("C", function() cmd_arg = "--clipboard-only"; try_exec() end)
-    hl.bind("S", function() cmd_arg = "-o ~/Pictures/Screenshots -f \"screenshot_$(date +%Y-%m-%d_%H-%M-%S).png\""; try_exec() end)
-
-    hl.bind("M", function() cmd_region = "output"; try_exec() end)
-    hl.bind("W", function() cmd_region = "window"; try_exec() end)
-    hl.bind("R", function() cmd_region = "region"; try_exec() end)
-
-    -- ocr da screenshot
-    hl.bind("T", function()
-        cmd_arg = "-so /tmp -f $(id -u)_latest_img.png; tesseract /tmp/$(id -u)_latest_img.png /tmp/$(id -u)_latest_text; wl-copy < /tmp/$(id -u)_latest_text.txt"
-        try_exec()
-    end)
-
-    hl.bind("ESCAPE", hl.dsp.submap("reset"))
-end)
 
 -- workspaces on JKL;'
 hl.bind("SUPER + J", hl.dsp.focus({ workspace = 1 }))

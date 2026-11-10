@@ -20,8 +20,7 @@ in
     environment.systemPackages = with pkgs; [
       rofi
       mako
-      pkgs-2605.hyprshot
-      tesseract
+      pkgs-2605.flameshot
       pkgs-2605.quickshell
     ];
 
