@@ -86,11 +86,16 @@ sudo nixos-rebuild boot
 > [!NOTE]
 > You cannot use the artifact from GitHub Actions to install to the Jetson.
 
+> [!NOTE]
+> This section does not cover `antenna`. It is an Orange Pi Zero 3 with no internal
+> storage, so it boots a prebuilt SD image rather than being installed onto a disk.
+> See [Antenna and the Orange Pi](#antenna-and-the-orange-pi).
+
 First, either download the latest ISO from the [actions page](https://github.com/SHC-ASTRA/nixos-flake/actions?query=workflow%3A%22Build+installer+ISO%22+is%3Asuccess+branch%3Amain)
 or build it with the following command:
 
 ```bash
-# for antenna, deck, panda, and testbed
+# for deck, panda, and testbed
 nix build .#installer
 
 # for clucky. needs aarch64 (qemu is a good option)
@@ -171,7 +176,7 @@ The hosts are as follows:
 
 | Host      | Machine                                                             | Platform        |
 | --------- | ------------------------------------------------------------------- | --------------- |
-| `antenna` | The Latte Panda Delta 3 installed within the Tracking Antenna.      | `x86_64-linux`  |
+| `antenna` | The Orange Pi Zero 3 installed within the Tracking Antenna.         | `aarch64-linux` |
 | `clucky`  | The NVIDIA Jetson Orin installed within the main rover.             | `aarch64-linux` |
 | `deck`    | The Valve Steam Deck used with basestation.                         | `x86_64-linux`  |
 | `panda`   | The Latte Panda Delta 3 installed within basestation.               | `x86_64-linux`  |
@@ -179,6 +184,9 @@ The hosts are as follows:
 
 Clucky runs on an Orin, so it needs its own installer ISO and a firmware flash before
 that ISO will boot. See [Clucky and the Jetson](#clucky-and-the-jetson).
+
+Antenna runs on an Orange Pi Zero 3, which is provisioned by flashing an SD card rather
+than by the installer. See [Antenna and the Orange Pi](#antenna-and-the-orange-pi).
 
 ### Clucky and the Jetson
 
@@ -196,6 +204,33 @@ The two things worth knowing that are specific to us:
 ```bash
 docker run --device=nvidia.com/gpu=all ...
 ```
+
+### Antenna and the Orange Pi
+
+Antenna is an Orange Pi Zero 3, an Allwinner H618 board. It has no UEFI firmware and no
+onboard storage, so none of the x86 install path applies to it: there is no disko layout,
+no installer ISO, and no `astra-install` run. The whole system ships as an SD card image.
+
+```bash
+# needs aarch64. without the binary cache this emulates every aarch64 compile under qemu,
+#   which for a ROS2 closure is an afternoon you will not get back.
+nix build .#packages.aarch64-linux.antenna
+
+zstdcat result/sd-image/antenna.img.zst \
+  | sudo dd of=/dev/sdX bs=4M status=progress conv=fsync
+```
+
+Two pieces make this boot, both set up in [`modules/hardware/antenna/`](./modules/hardware/antenna/):
+
+**U-Boot lives in raw sectors, not a partition.** The H618 boot ROM looks for an SPL
+8 KiB into the SD card, before any partition table entry. `sdImage.postBuildCommands`
+`dd`s `pkgs.ubootOrangePiZero3` there after the image is assembled.
+
+**There is no EFI bootloader.** U-Boot finds `/boot/extlinux/extlinux.conf` on the root
+partition, so antenna uses `boot.loader.generic-extlinux-compatible` and force-disables
+the systemd-boot setup the shared config turns on for every other host.
+
+Serial console is UART0 on the 3-pin debug header, 115200 8N1.
 
 ### Binary Cache
 
@@ -250,8 +285,8 @@ Here are some example block device files names:
   `deck`.
 - `/dev/nvme0n1p1` - NVME device partition. Do not select this as it is a partition,
   not the whole device!
-- `/dev/mmcblk0` - eMMC device. This is what you will select for `antenna` or
-  `panda`.
+- `/dev/mmcblk0` - eMMC/SD device. This is what you will select for `panda`. Note that
+  on antenna this is the SD card you flashed, which the installer never touches.
 - `/dev/sdb` - SATA or USB device. This could either be the SATA SSD inside of one of
   the NUCs, or it could be your installer USB. Double check the size with
   `sudo fdisk -l`.

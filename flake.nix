@@ -112,7 +112,12 @@
       # packages are different per arch, so we do not use forAllSystems
       packages = {
         x86_64-linux.installer = self.nixosConfigurations.installer.config.system.build.isoImage;
-        aarch64-linux.installer = self.nixosConfigurations.installer-jetson.config.system.build.isoImage;
+        aarch64-linux = {
+          installer = self.nixosConfigurations.installer-jetson.config.system.build.isoImage;
+          # antenna is an Orange Pi Zero 3, which boots a flashed SD card rather than the
+          #   installer ISO. see `modules/hardware/antenna`.
+          antenna = self.nixosConfigurations.antenna.config.system.build.sdImage;
+        };
       };
 
       diskoConfigurations.standard = import ./modules/disko;

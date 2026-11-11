@@ -1,10 +1,12 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-HOSTS=(antenna clucky deck panda testbed)
-# the platform each host runs, in the same order as HOSTS. clucky is a Jetson AGX Orin;
+# antenna is deliberately absent: it is an Orange Pi Zero 3 that boots a prebuilt SD
+#   image instead of being installed onto a disk. see modules/hardware/antenna.
+HOSTS=(clucky deck panda testbed)
+# the platform each host runs, in the same order as HOSTS. clucky is a Jetson Orin;
 #   everything else is on x86.
-HOST_SYSTEMS=(x86_64-linux aarch64-linux x86_64-linux x86_64-linux x86_64-linux)
+HOST_SYSTEMS=(aarch64-linux x86_64-linux x86_64-linux x86_64-linux)
 
 # the platform of the ISO this script is running from, substituted in by
 # modules/installer/default.nix. nixos-install builds the system on the machine running
