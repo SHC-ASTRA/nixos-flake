@@ -11,6 +11,8 @@ jobs:
   build:
     name: Build astra-installer.iso
     runs-on: ubuntu-latest
+    env:
+      ATTIC_TOKEN: ${{ secrets.ATTIC_TOKEN }}
     steps:
       - uses: actions/checkout@v4
 
@@ -26,8 +28,8 @@ jobs:
         with:
           extra-conf: |
             accept-flake-config = true
-            extra-substituters = https://ros.cachix.org https://attic.iid.ciirc.cvut.cz/ros
-            extra-trusted-public-keys = ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo= ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q=
+            extra-substituters = https://cache.ryleu.me/astra https://ros.cachix.org https://attic.iid.ciirc.cvut.cz/ros
+            extra-trusted-public-keys = astra:d9bYlP7iR2odaZA2hYYuZRfaeN89lK+W1hiw6THibeQ= ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo= ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q=
 
       - uses: nix-community/cache-nix-action@v7
         with:
@@ -45,6 +47,12 @@ jobs:
 
       - name: Build installer
         run: nix build .#installer --print-build-logs
+
+      - name: Push to binary cache
+        if: ${{ env.ATTIC_TOKEN != '' }}
+        run: |
+          nix run nixpkgs#attic-client -- login astra https://cache.ryleu.me "$ATTIC_TOKEN"
+          nix run nixpkgs#attic-client -- push astra:astra ./result
 
       - name: Resolve ISO path
         id: iso

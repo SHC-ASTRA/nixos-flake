@@ -29,19 +29,26 @@ let
       nixos-install-tools
       git
     ];
-    # substitute in the source and ref
-    text = builtins.replaceStrings [ "@astraSrc@" "@astraRef@" ] [ astraSrc astraRef ] (
-      builtins.readFile ./astra-install.sh
-    );
+    # substitute in the source, the ref, and the architecture of this ISO
+    text =
+      builtins.replaceStrings
+        [ "@astraSrc@" "@astraRef@" "@astraSystem@" ]
+        [ astraSrc astraRef pkgs.stdenv.hostPlatform.system ]
+        (builtins.readFile ./astra-install.sh);
   };
 in
 {
   imports = [
     (modulesPath + "/installer/cd-dvd/installation-cd-minimal.nix")
     ../nixos/wifi.nix
+    # `nixos-install` builds the system on the machine running this ISO, so it needs these
+    ../nixos/substituters.nix
   ];
 
-  image.baseName = lib.mkForce "astra-installer";
+  image.baseName = lib.mkForce "astra-installer-${pkgs.stdenv.hostPlatform.linuxArch}";
+
+  # every host but clucky is x86. `modules/installer/jetson.nix` overrides this.
+  nixpkgs.hostPlatform = lib.mkDefault "x86_64-linux";
 
   # useful tools to have on a recovery / reinstall ISO
   environment.systemPackages = with pkgs; [
@@ -64,14 +71,6 @@ in
     experimental-features = [
       "nix-command"
       "flakes"
-    ];
-    extra-substituters = [
-      "https://ros.cachix.org"
-      "https://attic.iid.ciirc.cvut.cz/ros"
-    ];
-    extra-trusted-public-keys = [
-      "ros.cachix.org-1:dSyZxI8geDCJrwgvCOHDoAfOm5sV1wCPjBkKL+38Rvo="
-      "ros:JR95vUYsShSqfA1VTYoFt1Nz6uXasm5QrcOsGry9f6Q="
     ];
     trusted-users = [
       "root"
